@@ -127,6 +127,8 @@ venv.bak/
 
 # mkdocs documentation
 /site
+/slides
+/slides_new
 
 # mypy
 .mypy_cache/
