@@ -4,41 +4,71 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-    <title>{{{title}}}</title>
-    {{#absoluteUrl}}
-    <meta property="og:title" content="{{{title}}}" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="{{{absoluteUrl}}}/featured-slide.jpg" />
-    <meta property="og:url" content="{{{absoluteUrl}}}" />
-    {{/absoluteUrl}}
-    <link rel="shortcut icon" href="{{{base}}}/favicon.ico" />
-    <link rel="stylesheet" href="{{{base}}}/dist/reset.css" />
-    <link rel="stylesheet" href="{{{base}}}/dist/reveal.css" />
-    <link rel="stylesheet" href="{{{base}}}/static/css/reset.css" />
-    <link rel="stylesheet" href="{{{base}}}/static/css/evo.css" />
-    <!-- <link rel="stylesheet" href="{{{themeUrl}}}" id="theme" /> -->
-    <link rel="stylesheet" href="{{{base}}}{{{highlightThemeUrl}}}" />
+    <title>BE</title>
+    <link rel="shortcut icon" href="./favicon.ico" />
+    <link rel="stylesheet" href="./dist/reset.css" />
+    <link rel="stylesheet" href="./dist/reveal.css" />
+    <link rel="stylesheet" href="./static/css/reset.css" />
+    <link rel="stylesheet" href="./static/css/evo.css" />
+    <!-- <link rel="stylesheet" href="./_assets/evo" id="theme" /> -->
+    <link rel="stylesheet" href="./css/highlight/vs.css" />
 
-    {{#cssPaths}}
-    <link rel="stylesheet" href="{{{.}}}" />
-    {{/cssPaths}} {{#watch}}
-
-    <script>
-      document.write(
-        '<script src="http://' +
-          (location.host || 'localhost').split(':')[0] +
-          ':35729/livereload.js?snipver=1"></' +
-          'script>'
-      );
-    </script>
-    {{/watch}}
+    <link rel="stylesheet" href="./_assets/static/css/evo.css" />
+    <link rel="stylesheet" href="./_assets/static/css/reset.css" />
   </head>
   <body>
     <div class="reveal">
       <div class="slides">
-        <section data-markdown {{{slidifyAttributes}}}>
+        <section data-markdown data-separator="<!--s-->" data-separator-vertical="<!--v-->">
           <textarea data-template>
-            {{{markdown}}}
+            
+
+### BE: GCP & Docker
+
+<!--v-->
+
+#### We are going to
+
+![docker](static/img/buildshiprun.png) <!-- .element: height="20%" width="20%" -->
+
+using
+
+![gcp](https://cloud.orange-business.com/wp-content/uploads/2020/11/logo-google-cloud-platform.png)  <!-- .element: height="20%" width="20%" -->
+
+<!--v-->
+
+#### Team, assemble
+
+![assemble](https://media.giphy.com/media/12fNtUb1WhSqrK/giphy.gif)
+
+Get by groups of 4, cooperate, help each other out
+
+<!--v-->
+
+#### Today, you will (1/2)
+
+* Connect to a **GCP project** (with multiple people)
+* Create a **Google Compute Engine** instance
+* Connect to it with **SSH**
+* Build a **Docker Image** (using pre-made resources from **Google Cloud Storage**)
+* Push it to a **Container Registry**
+* Pull a teammate's **Image** from the same registry
+* Run the **container** and the app inside it
+* Use **port forwarding** to display the running app in your browser
+
+<!--v-->
+
+#### Today, you will (2/2)
+
+* Rediscover Streamlit
+* Deploy a container straight to a new virtual machine
+
+<!--v-->
+
+![readysetgo](https://media.giphy.com/media/l4FB2kRVn9LoXuWJO/giphy.gif)
+
+[BE walkthrough](../4_be.html)
+
           </textarea>
         </section>
       </div>
@@ -59,17 +89,15 @@
             <img src="static/img/sdd_logo.png" width="8%">
         </div>
     </div>
-    <script src="{{{base}}}/dist/reveal.js"></script>
+    <script src="./dist/reveal.js"></script>
 
-    {{#mermaidOptionsStr}}
-    <script src="{{{base}}}/mermaid/dist/mermaid.min.js"></script>
-    {{/mermaidOptionsStr}}
+    <script src="./mermaid/dist/mermaid.min.js"></script>
 
-    <script src="{{{base}}}/plugin/markdown/markdown.js"></script>
-    <script src="{{{base}}}/plugin/highlight/highlight.js"></script>
-    <script src="{{{base}}}/plugin/zoom/zoom.js"></script>
-    <script src="{{{base}}}/plugin/notes/notes.js"></script>
-    <script src="{{{base}}}/plugin/math/math.js"></script>
+    <script src="./plugin/markdown/markdown.js"></script>
+    <script src="./plugin/highlight/highlight.js"></script>
+    <script src="./plugin/zoom/zoom.js"></script>
+    <script src="./plugin/notes/notes.js"></script>
+    <script src="./plugin/math/math.js"></script>
     <script>
       function extend() {
         var target = {};
@@ -107,12 +135,9 @@
       // options from URL query string
       var queryOptions = Reveal().getQueryHash() || {};
 
-      var options = extend(defaultOptions, {{{revealOptionsStr}}}, queryOptions);
+      var options = extend(defaultOptions, {"transition":"fade","transitionSpeed":"default","controls":true,"slideNumber":true,"width":"100%","height":"100%","_":["."],"template":"static/template/reveal.html","listing-template":"static/template/listing.html","listingTemplate":"static/template/listing.html","css":["static/css/evo.css","static/css/reset.css"],"static-dirs":"static","staticDirs":"static","static":"../../slides_new"}, queryOptions);
     </script>
 
-    {{#scriptPaths}}
-    <script src="{{{.}}}"></script>
-    {{/scriptPaths}}
 
     <script>
       Reveal.initialize(options);
@@ -123,9 +148,8 @@
       });
     </script>
 
-    {{#mermaidOptionsStr}}
     <script>
-      const mermaidOptions = extend({ startOnLoad: false }, {{{mermaidOptionsStr}}});
+      const mermaidOptions = extend({ startOnLoad: false }, {});
       mermaid.startOnLoad = false;
       mermaid.initialize(mermaidOptions);
       const cb = function (event) {
@@ -135,6 +159,5 @@
       Reveal.addEventListener('ready', cb);
       Reveal.addEventListener('slidetransitionend', cb);
     </script>
-    {{/mermaidOptionsStr}}
   </body>
 </html>
