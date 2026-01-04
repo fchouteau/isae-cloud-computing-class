@@ -257,6 +257,63 @@ Cloud providers are offering services with increasing layers of abstraction...
 
 ![cloud](static/img/pizzaasaservicev2.jpg)  <!-- .element: height="65%" width="65%" -->
 
+<!--s-->
+
+### Object Storage
+
+<!--v-->
+
+#### Block Storage vs Object Storage
+
+| Aspect | Block Storage | Object Storage |
+|---|---|---|
+| Model | Disk partitions, file systems | Buckets and objects |
+| Access | Mount as drive, POSIX | HTTP API (REST) |
+| Use case | Databases, OS disks | Data lakes, ML datasets |
+| Scalability | Harder to scale | Built with scale in mind (abstraction over the storage location) |
+
+<!--v-->
+
+#### Object Storage Model
+
+- **Bucket**: Container for objects (like a top-level folder)
+- **Object**: File + metadata (stored as key-value)
+- **Key**: Object path (e.g., `data/train/image_001.jpg`)
+
+No real hierarchy, just a flat namespace with "/" in keys
+
+<!--v-->
+
+#### Permissions: POSIX vs Object Storage
+
+| POSIX (files) | Object Storage |
+|---------------|----------------|
+| User/Group/Other | IAM policies (users, groups, service accounts) |
+| rwx bits | Fine-grained: read, write, delete, list, admin |
+| Per-file only | Per-bucket or per-object |
+| Local to machine | Managed centrally (cloud IAM) |
+
+Object storage enables **sharing across teams/projects** without managing OS users
+
+<!--v-->
+
+#### Why Object Storage for Data Science?
+
+- **Cheap**: ~$0.02/GB/month (vs $0.10+ for disk)
+- **Accessible**: HTTP API from anywhere
+- **Scalable**: Petabytes without infrastructure management
+- **Shareable**: Easy to share datasets across teams/machines
+
+<!--v-->
+
+#### Object Storage Providers
+
+| Provider | Service | URI Format |
+|----------|---------|------------|
+| AWS | S3 | `s3://bucket/key` |
+| GCP | GCS | `gs://bucket/key` |
+
+Same concepts, similar APIs, different CLIs
 
 <!--s-->
 
@@ -264,11 +321,13 @@ Cloud providers are offering services with increasing layers of abstraction...
 
 <!--v-->
 
+#### Major cloud providers
+
 ![cloud_vendors](https://dgtlinfra.com/wp-content/uploads/2022/06/Top-10-Cloud-Service-Providers-Globally-in-2022.jpg.webp)  <!-- .element: height="50%" width="50%" -->
 
 <!--v-->
 
-AI Cloud Providers
+#### AI Cloud Providers
 
 ![paperspace](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*vuacjjmtbLQEoXoIbbFVNQ.png)  <!-- .element: height="50%" width="50%" -->
 
@@ -278,7 +337,7 @@ AI Cloud Providers
 
 <!--v-->
 
-🐓🧀🐸🇫🇷
+#### French Cloud Providers 🐓🧀🐸🇫🇷
 
 <img src="https://www.comptoir-hardware.com/images/stories/_logos/ovhcloud.png" alt="" width="20%" height="20%" style="background:none; border:none; box-shadow:none;"/>
 
@@ -286,21 +345,27 @@ AI Cloud Providers
 
 <img src="https://fr.outscale.com/wp-content/uploads/2018/08/3DS_OUTSCALE_Dark-Blue_RGB.png" alt="" width="20%" height="20%" style="background:none; border:none; box-shadow:none;"/>
 
-<img src="https://cloud.orange.com/ui/app/static/assets/brand/logo_header_login.png" alt="" width="20%" height="20%" style="background:none; border:none; box-shadow:none;"/>
+<img src="https://www.bleucloud.fr/app/themes/bleu-theme/public/images/logo-white.74ccb8.svg" alt="" width="20%" height="20%" style="background:none; border:none; box-shadow:none;"/>
 
 OVH went public in 2021
 
 Scaleway is leading the charge for AI in France (& Europe)
 
+Outscale is focusing on SecNumCloud
+
+BleuCloud is CapGemini x Orange
+
 <!--v-->
 
-🐓🧀🐸🇫🇷
+#### French Cloud Providers 🐓🧀🐸🇫🇷
 
-[Thales Cloud Souverain](https://thales-group.prezly.com/thales-et-google-cloud-annoncent-un-partenariat-strategique-pour-developper-conjointement-un--cloud-de-confiance--en-france#)
+- Cloud Act !
+- SecNumCloud : ANSSI's security qualification for cloud providers handling sensitive French data
 
-[OVH x Google Cloud](https://corporate.ovhcloud.com/fr/newsroom/news/ovhcloud-and-google-cloud-announce-strategic-partnership-co-build-trusted-cloud-solution-europe/)
-
-[Scaleway et l'IA](https://www.lemonde.fr/economie/article/2023/09/26/xavier-niel-annonce-des-investissements-strategiques-dans-l-ia_6191008_3234.html)
+| Project | Partners                                                                                    | Tech | Status |
+|:---:|---------------------------------------------------------------------------------------------|---|---|
+| Bleu | Orange + Capgemini (100% French ownership), <br>Microsoft as tech partner (not shareholder) | Azure + M365 | Commercial operations launched 2024.<br>First clients include EDF, Dassault Aviation.  |
+| S3NS. | Thales (majority) <br>Google Cloud (minority shareholder, <24%)                             | GCP | SecNumCloud 3.2 obtained December 2024.<br>Offers IaaS/PaaS/CaaS |
 
 <!--v-->
 
@@ -312,11 +377,24 @@ Scaleway is leading the charge for AI in France (& Europe)
 
 <!--v-->
 
-![cloud](https://cdn.statcdn.com/Infographic/images/normal/18819.jpeg) <!-- .element: height="50%" width="50%" -->
+#### Cloud Market Share (World)
+
+![cloud](https://cdn.statcdn.com/Infographic/images/normal/18819.jpeg) <!-- .element: height="40%" width="40%" -->
+
+[source, 2025](https://www.statista.com/chart/18819/worldwide-market-share-of-leading-cloud-infrastructure-service-providers/)
 
 <!--v-->
 
-For France, 
+#### Cloud Market Share (Europe)
+
+![europan_cloud](https://srgresearch.s3.amazonaws.com/uploads/Euro_cloud_share.jpg?AWSAccessKeyId=AKIAJ5V27TDV4ZXYJ4KQ&Signature=tNIxhaskmvvVmo1YzApb%2Bo2Pn9U%3D&Expires=1767565544)  <!-- .element: height="40%" width="40%" -->
+
+[source, 2025](https://www.srgresearch.com/articles/european-cloud-providers-local-market-share-now-holds-steady-at-15)
+
+<!--v-->
+
+#### Cloud Market Share (France)
+
 ![france](static/img/cloudshare2022.webp) <!-- .element: height="50%" width="50%" -->
 
 [source, 2021](https://www.larevuedudigital.com/le-marche-du-cloud-concentre-en-france-entre-amazon-microsoft-et-google/)

@@ -21,7 +21,7 @@ revealOptions:
 
 by a data scientist, for data scientists
 
-**ISAE-SUPAERO, SDD, November 2023**
+**ISAE-SUPAERO, SDD, January 2026**
 
 Florient CHOUTEAU
 
@@ -31,10 +31,11 @@ Florient CHOUTEAU
 
 <img src="static/img/ads_logo.jpg" alt="" width="128px" height="128px" style="background:none; border:none; box-shadow:none;"/>
 
-- **Florient CHOUTEAU**, SDD 2016
-- Expert (Staff Engineer) in Artificial Intelligence for Space Systems at **Airbus Defence and Space**
+- **Florient CHOUTEAU**, SDD 2015-2016 🎂
+- eXpert in Artificial Intelligence for Space Systems at **Airbus Defence and Space**
 - Computer Vision Team (Earth Observation, Space Exploration, Space Domain Awareness)
 - Specialized in Satellite Imagery Processing & Deep Learning
+- Daily job revolving around Machine Learning + Satellite Imagery
 - Working regularly on cloud infra, remote development environment, docker
 
 Any question ? contact me on slack !
@@ -49,9 +50,13 @@ Introduction to global concepts of cloud computing, virtualisation, containers e
 
 ### Why ?
 
-The building blocks of "AI" : Data, Computational Power, Software
+The building blocks of "AI" ...
+- Data
+- Computational Power
+- Software
+- People and skills to make everything works
 
-And the people running everything
+... require a lot of paradigms shifts,
 
 <!--v-->
 
@@ -61,7 +66,7 @@ eg. having manipulated and having a rough idea of...
 
 ... tools & concepts you **may** need during your internships and early career...
 
-... *cloud native* culture you **should** need later !
+... *cloud native* culture you **will** need later !
 
 <!--v-->
 
@@ -80,49 +85,24 @@ I am not a Cloud Engineer, or a Devops,  ... <!-- .element: class="fragment" dat
 ### This class will be successful if...
 
 - You understand why & how the cloud can be useful for you <!-- .element: class="fragment" data-fragment-index="1" -->
+- You are familiar with remote development environments <!-- .element: class="fragment" data-fragment-index="2" -->
 - You can connect to and manipulate remote machines <!-- .element: class="fragment" data-fragment-index="3" -->
-- You are familiar with remote development environments <!-- .element: class="fragment" data-fragment-index="4" -->
-- You know the basics of containerisation and docker <!-- .element: class="fragment" data-fragment-index="5" -->
-- And you have applied them to deploy your model into "production" <!-- .element: class="fragment" data-fragment-index="6" -->
-- You have a rough idea of the problematic of orchestration <!-- .element: class="fragment" data-fragment-index="7" -->
+- You know the basics of containerisation and docker <!-- .element: class="fragment" data-fragment-index="4" -->
+- And you have applied them to deploy your model into "production" <!-- .element: class="fragment" data-fragment-index="5" -->
+- You have a rough idea of the problematic of orchestration <!-- .element: class="fragment" data-fragment-index="6" -->
 
 <!--v-->
 
 ### Schedule
 
-<style type="text/css">
-.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
-.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
-</style>
-<table class="tg"><thead>
-  <tr>
-    <th class="tg-c3ow">Date</th>
-    <th class="tg-c3ow">Length</th>
-    <th class="tg-0pky">Content</th>
-  </tr></thead>
-<tbody>
-  <tr>
-    <td class="tg-c3ow">06/01</td>
-    <td class="tg-c3ow">3h</td>
-    <td class="tg-0pky">Intro to Cloud Computing &amp; Remote Dev Env</td>
-  </tr>
-  <tr>
-    <td class="tg-c3ow">06/01</td>
-    <td class="tg-c3ow">3h</td>
-    <td class="tg-0pky">Containers &amp; Docker</td>
-  </tr>
-  <tr>
-    <td class="tg-c3ow">13/01</td>
-    <td class="tg-c3ow">3h</td>
-    <td class="tg-0pky">BE Docker &amp; GCP</td>
-  </tr>
-  <tr>
-    <td class="tg-c3ow">13/01</td>
-    <td class="tg-c3ow">3h</td>
-    <td class="tg-0pky">BE Deploy your ML Model in Production</td>
-  </tr>
-</tbody>
-</table>
+| Date | Length | Content |
+|:---:|:---:|---|
+| 06/01 | 3h | Intro to Cloud Computing & Remote Dev Env |
+| 06/01 | 3h | Containers & Docker |
+| 13/01 | 3h | BE Docker & GCP |
+| 13/01 | 3h | BE Deploy your ML Model in Production |
+
+So day 1 a mixture of lectures and hands-on, day 2 we will focus on practice
 
 <!--v-->
 
@@ -134,3 +114,20 @@ Some things may go wrong, especially because of :
 - Google Cloud Platform responsiveness
 
 Brace yourselves 💪
+
+<!--v-->
+
+### ⚠️
+
+It works "best" with:
+- Google Chrome or Google Chromium. You may need to disable your ad blocker. 
+- VSCode
+- A GitHub account
+- A valid gmail address (that you can create for this class)
+
+<!--v-->
+
+### ⚠️
+
+- This is a beginner class, so your not-so-bad LLM chatbot can do it eyes closed. Use it wisely ! 
+- Tips : Debug mode, Plastic Duck, Learning checker, ...

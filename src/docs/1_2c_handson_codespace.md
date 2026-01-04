@@ -113,29 +113,92 @@ You can then carry these commands in order to get a feel of the "computer" behin
 
 To learn more about port forwarding in codespaces, refer to the [documentation](https://docs.github.com/en/codespaces/developing-in-codespaces/forwarding-ports-in-your-codespace)
 
-## 2. Installing a data science environment and running a notebook
+## 2. Running a ML training script in the Codespace
 
-As an exercise, you will setup your development environment in the codespace and run an MLClass Notebook inside the VM,
+In this section, you will run a machine learning training script directly in your Codespace. This demonstrates **remote computation**: the training runs on the Codespace VM, not on your laptop.
 
-- Transfer a notebook you are working on from your computer
-- Transfer the data as well if it's not downloaded
-- Setup your environment using pip, conda, etc... as you would do in your local machine
-- Run jupyter lab or jupyter notebook from your codespace and connect to it like previously
-- You can continue your script / etc... 
+### 2.1. Locate the training script
 
-If you don't have anything at hand you can use this simple repo as an example (you will see that later on your DL classes) : 
-[https://github.com/pytorch/examples/tree/main/mnist](https://github.com/pytorch/examples/tree/main/mnist)
+In your Codespace file explorer, navigate to the `training/` folder. You should see a `training.py` script.
+
+Take a look at the code:
+
+```bash
+cat training/training.py
+```
 
 !!! question
-    How comfortable do you feel with this remote machine ? Is it easy to get data in or out ? Code in or out ?
+    What does this script do? What model is it training? What dataset does it use?
 
-## 3. Building a webapp
+### 2.2. Install dependencies and run the training
 
-We will now introduce streamlit, which is a very nice tool to build quick webapps in python !
+First, install the required dependencies:
 
-In this TP you will build your first interactive webapp in python and preview it using codespace. This will help you get a feel of using the remote vscode
+```bash
+pip install torch torchvision
+```
 
-First, look at this video, 
+Then run the training script:
+
+```bash
+python training/training.py --epochs 3
+```
+
+!!! question "Think about it"
+    **Where is this training actually running?**
+
+    - On your laptop?
+    - On the Codespace VM (in the cloud)?
+    - Somewhere else?
+
+    How can you verify this? (Hint: check CPU usage with `htop` in another terminal)
+
+Watch the training progress. The script will save a model file (e.g., `model.pth`) when complete.
+
+### 2.3. Download the trained model to your laptop
+
+Once training is complete, you need to retrieve the model file to your local machine.
+
+**Option A: Via the file explorer**
+
+- Right-click on the `model.pth` file in the VS Code file explorer
+- Select "Download"
+
+**Option B: Via the terminal (if you have `gh` CLI locally)**
+
+```bash
+# From your local machine terminal
+gh codespace cp remote:/workspaces/isae-cloud-computing-codespace/training/model.pth ./model.pth
+```
+
+!!! success "Checkpoint"
+    You have successfully:
+
+    - [x] Run a training script on a remote machine (Codespace)
+    - [x] Downloaded the resulting model to your laptop
+
+    This is the fundamental workflow of **remote computation**: run heavy tasks in the cloud, retrieve results locally.
+
+!!! question
+    How comfortable do you feel with this remote machine? Is it easy to get data in or out? Code in or out?
+
+## 3. Building a webapp (Preview & Bonus)
+
+!!! note "Preview for Day 2"
+    This section is a **preview** of what you'll do in Day 2 when we cover **deployment**.
+
+    It's useful to do now because it lets you explore:
+
+    - **Port forwarding**: How to access a web app running on a remote machine from your browser
+    - **Web app deployment basics**: Running a server and exposing it to users
+
+    If you're short on time, you can skip this section and come back to it later.
+
+We will introduce **Streamlit**, a Python library to build quick web apps for data science.
+
+In this section, you will build your first interactive webapp in Python and preview it using Codespace's port forwarding feature.
+
+First, look at this video: 
 
 <video width="320" height="240" controls>
   <source src="https://s3-us-west-2.amazonaws.com/assets.streamlit.io/videos/hero-video.mp4" type="video/mp4">
@@ -202,18 +265,46 @@ image_comparison(
 !!! question
     Can you describe, by reading the documentation, what does the code do ?
 
-### 3.2. Local deployment in codespace
+### 3.2. Running Streamlit in the Codespace
 
-First, we will install in the codespace the dependencies for our application,
+Install the dependencies:
 
-`pip install streamlit streamlit opencv-python-headless streamlit-image-comparison`
+```bash
+pip install streamlit opencv-python-headless streamlit-image-comparison
+```
 
-Then create a file `streamlit_jswt.py` and copy/paste the code above.
+Create a file `streamlit_jswt.py` and copy/paste the code above.
 
-Then execute it `streamlit run streamlit_jswt.py`
+Run the Streamlit server:
 
-This will launch the application on the port 8501 (by default) of our codespace. You can connect to it as usual.
+```bash
+streamlit run streamlit_jswt.py
+```
 
-🤩 Nice, isn't it ?
+This will launch the application on **port 8501** of your Codespace.
 
-Now you can quit the server.
+**To view it:**
+
+1. Check the "Ports" tab in VS Code (bottom panel)
+2. You should see port 8501 listed
+3. Click "Open in Browser" or hover and click the globe icon
+
+!!! question "Understanding port forwarding"
+    The Streamlit server is running on the Codespace VM, not on your laptop.
+
+    Yet you can see it in your browser. How is this possible?
+
+    **Answer:** Codespace automatically creates a tunnel (port forward) from the remote port 8501 to a public URL that your browser can access.
+
+Once you're done exploring, quit the server with `CTRL+C`.
+
+!!! success "What you learned"
+    - **Port forwarding**: Accessing a remote service through a tunnel
+    - **Web app basics**: A Python process serving HTTP on a port
+    - **Deployment preview**: In Day 2, you'll deploy apps like this to the cloud
+
+## What's Next
+
+In Session 2, you'll learn how to **package applications using Docker** so they can run anywhere.
+
+In Day 2, you'll combine these skills to deploy ML models to the cloud.

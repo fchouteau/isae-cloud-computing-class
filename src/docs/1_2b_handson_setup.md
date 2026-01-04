@@ -16,13 +16,13 @@
 !!! note
     Only do this if you are asked to
 
-For this, you need a valid gmail address,
+For this, you need a valid gmail address, then
 
-Fill the form below to be added to the common ISAE-SDD project. The project id for this year is `isae-sdd-481407`
+Fill the form that was posted on slack to be added to the common ISAE-SDD project. The project id for this year will also be given on the slack.
 
-Check that you have access to the project before starting the hands-on :
+Check that you have access to the project before starting the hands-on. Copy-paste the project id in the following URL, and check your browser
 
-[Link to the project](https://console.cloud.google.com/home/dashboard?project=isae-sdd-481407) 
+https://console.cloud.google.com/home/dashboard?project=${PROJECT_ID}
 
 !!! success
     This should open a webpage indicating that you have access to the project.
@@ -36,10 +36,13 @@ Here you will each create a Google Cloud Platform account and project using the 
 
 [Overview link](https://cloud.google.com/docs/overview)
 
-* Create an account within [Google cloud Platform](https://console.cloud.google.com) using your ISAE e-mail
+* Create an account within [Google Cloud Platform](https://console.cloud.google.com) using your ISAE e-mail
 * Use the code given by Dennis to redeem your free credits
 * You should have a [free tier](https://cloud.google.com/free) available to you as well as a coupon giving your credit
 * From [the interface](https://console.cloud.google.com) you should [create a project](https://cloud.google.com/resource-manager/docs/creating-managing-projects) with a name of your choice (it is recommended to put for example sdd2425-yourname so that it is clear)
 
-## 3. Connecting with your GitHub account
+## 3. GitHub & VSCode
 
+You should have a GitHub account already. Ensure you are connected with it in GitHub.
+
+You should also have vscode configured. In vscode, install the CodeSpace extension. Check the [vscode documentation](https://code.visualstudio.com/docs/remote/codespaces) for more information.
