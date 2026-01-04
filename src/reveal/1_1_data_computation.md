@@ -90,13 +90,39 @@ I am not a Cloud Engineer, or a Devops,  ... <!-- .element: class="fragment" dat
 
 ### Schedule
 
-|  Date | Length | Content                                              |
-|:-----:|:------:|------------------------------------------------------|
-| 08/10 |   3h   | Intro to Cloud Computing & Remote Dev Env            |
-| 15/10 |   3h   | Google Cloud Platform                                |
-| 22/10 |   3h   | Containers & Docker                                  |
-| 05/11 |   3h   | BE Docker & GCP                                      |
-| 13/11 |   3h   | BE Deploy your ML Model in Production                |
+<style type="text/css">
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+</style>
+<table class="tg"><thead>
+  <tr>
+    <th class="tg-c3ow">Date</th>
+    <th class="tg-c3ow">Length</th>
+    <th class="tg-0pky">Content</th>
+  </tr></thead>
+<tbody>
+  <tr>
+    <td class="tg-c3ow">06/01</td>
+    <td class="tg-c3ow">3h</td>
+    <td class="tg-0pky">Intro to Cloud Computing &amp; Remote Dev Env</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">06/01</td>
+    <td class="tg-c3ow">3h</td>
+    <td class="tg-0pky">Containers &amp; Docker</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">13/01</td>
+    <td class="tg-c3ow">3h</td>
+    <td class="tg-0pky">BE Docker &amp; GCP</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow">13/01</td>
+    <td class="tg-c3ow">3h</td>
+    <td class="tg-0pky">BE Deploy your ML Model in Production</td>
+  </tr>
+</tbody>
+</table>
 
 <!--v-->
 

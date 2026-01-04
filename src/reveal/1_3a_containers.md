@@ -13,7 +13,7 @@ revealOptions:
     height: '100%'
 ---
 
-## From Virtualisation to Containerisation
+# From Virtualisation to Containerisation
 
 ![](static/img/docker_meme.png)
 

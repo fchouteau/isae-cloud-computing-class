@@ -1,7 +1,8 @@
-Tested with
+Built with:
 
-mkdocs                     1.5.3
-mkdocs-material            9.4.10
-mkdocs-material-extensions 1.3
+mkdocs                      1.6.1 (maintenance)
+mkdocs-material             9.7.1 (maintenance)
+mkdocs-material-extensions  1.3.1 (maintenance)
 
-reveal-md 5.3.1
+node                        v22.21.1
+reveal-md                   6.1.4 (maintenance)

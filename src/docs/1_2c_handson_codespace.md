@@ -113,7 +113,7 @@ You can then carry these commands in order to get a feel of the "computer" behin
 
 To learn more about port forwarding in codespaces, refer to the [documentation](https://docs.github.com/en/codespaces/developing-in-codespaces/forwarding-ports-in-your-codespace)
 
-## 2. Running your notebooks in the VM
+## 2. Installing a data science environment and running a notebook
 
 As an exercise, you will setup your development environment in the codespace and run an MLClass Notebook inside the VM,
 
@@ -129,7 +129,7 @@ If you don't have anything at hand you can use this simple repo as an example (y
 !!! question
     How comfortable do you feel with this remote machine ? Is it easy to get data in or out ? Code in or out ?
 
-## 3. Let's discover Streamlit
+## 3. Building a webapp
 
 We will now introduce streamlit, which is a very nice tool to build quick webapps in python !
 
@@ -217,15 +217,3 @@ This will launch the application on the port 8501 (by default) of our codespace.
 🤩 Nice, isn't it ?
 
 Now you can quit the server.
-
-### 3.3. A more complex application
-
-We will run and package a more complex application, but a lot more useful for your deep learning class.
-
-If you started your github codespace from the isae cloud computing codespace, you should have a folder called `demo-streamlit-activation-function`.
-
-Otherwise, clone the repository `git clone https://github.com/fchouteau/isae-cloud-computing-codespace.git`
-
-cd to the directory `cd isae-demo-streamlit-activation-functions` then as last time, install the dependencies `pip install -r requirements.txt` then run the application `streamlit run app.py`
-
-You can visualize it as last time. This should be quite useful for you given you just left (or will just start, it's early in the year...) the Deep Learning Class !

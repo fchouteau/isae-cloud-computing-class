@@ -147,7 +147,7 @@ Une fois que vous avez interagi avec votre déploiement, nous allons maintenant 
 
 ## 6 - Deploiement du backend sur une VM Google Compute Engine
 
-Nous allons maintenant démarrer une instance de VM Google Compute Engine et directement y déployer un container. Vous avez déjà vu cette méthode dans la [section streamlit du BE](1_5_be.md#26-deployment-in-a-vm)
+Nous allons maintenant démarrer une instance de VM Google Compute Engine et directement y déployer un container. Vous avez déjà vu cette méthode dans la [section streamlit du BE](1_4a_docker_workflow.md#26-deployment-in-a-vm)
 
 N'oubliez pas de connecter votre github codespace à votre projet gcp en utilisant `gcloud init`
 
