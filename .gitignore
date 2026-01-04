@@ -141,3 +141,6 @@ dmypy.json
 # Reveal
 src/site
 src/docs/slides
+
+# No submodule
+isae-cloud-computing-codespace
