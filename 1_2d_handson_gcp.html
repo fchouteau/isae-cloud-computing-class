@@ -998,10 +998,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-install-google-cloud-sdk-configure-the-shell" class="md-nav__link">
+  <a href="#3-configure-the-google-cloud-sdk" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Install Google Cloud SDK &amp; Configure the shell
+        3. Configure the Google Cloud SDK
       
     </span>
   </a>
@@ -1107,7 +1107,7 @@
   <a href="#6a-deep-learning-vm" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6a. deep learning vm
+        6a. Deep Learning VM
       
     </span>
   </a>
@@ -1156,7 +1156,7 @@
   <a href="#7-end-to-end-example" class="md-nav__link">
     <span class="md-ellipsis">
       
-        7. End to end example
+        7. End-to-End Example
       
     </span>
   </a>
@@ -1164,10 +1164,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#8-important-cleaning-up" class="md-nav__link">
+  <a href="#8-introduction-to-infrastructure-as-code" class="md-nav__link">
     <span class="md-ellipsis">
       
-        8. IMPORTANT : Cleaning up
+        8. Introduction to Infrastructure as Code
       
     </span>
   </a>
@@ -1175,10 +1175,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#9-optional-introduction-to-infrastructure-as-code" class="md-nav__link">
+  <a href="#9-important-cleaning-up" class="md-nav__link">
     <span class="md-ellipsis">
       
-        9. Optional - Introduction to infrastructure as code
+        9. IMPORTANT: Cleaning up
       
     </span>
   </a>
@@ -1353,7 +1353,7 @@
   <span class="md-ellipsis">
     
   
-    Google Cloud and Docker BE
+    Workshop GCP & Docker
   
 
     
@@ -1369,7 +1369,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Google Cloud and Docker BE
+    Workshop GCP & Docker
   
 
           </label>
@@ -1417,7 +1417,7 @@
   <span class="md-ellipsis">
     
   
-    2. Compute Workflow
+    2. GCP Compute Workflow
   
 
     
@@ -1445,7 +1445,7 @@
   <span class="md-ellipsis">
     
   
-    3. Deployment Workflow
+    3. GCP Deployment Workflow
   
 
     
@@ -1494,7 +1494,7 @@
   <span class="md-ellipsis">
     
   
-    Deployment
+    Workshop Deploy your ML model into production
   
 
     
@@ -1510,7 +1510,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    Deployment
+    Workshop Deploy your ML model into production
   
 
           </label>
@@ -2100,10 +2100,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-install-google-cloud-sdk-configure-the-shell" class="md-nav__link">
+  <a href="#3-configure-the-google-cloud-sdk" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Install Google Cloud SDK &amp; Configure the shell
+        3. Configure the Google Cloud SDK
       
     </span>
   </a>
@@ -2209,7 +2209,7 @@
   <a href="#6a-deep-learning-vm" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6a. deep learning vm
+        6a. Deep Learning VM
       
     </span>
   </a>
@@ -2258,7 +2258,7 @@
   <a href="#7-end-to-end-example" class="md-nav__link">
     <span class="md-ellipsis">
       
-        7. End to end example
+        7. End-to-End Example
       
     </span>
   </a>
@@ -2266,10 +2266,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#8-important-cleaning-up" class="md-nav__link">
+  <a href="#8-introduction-to-infrastructure-as-code" class="md-nav__link">
     <span class="md-ellipsis">
       
-        8. IMPORTANT : Cleaning up
+        8. Introduction to Infrastructure as Code
       
     </span>
   </a>
@@ -2277,10 +2277,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#9-optional-introduction-to-infrastructure-as-code" class="md-nav__link">
+  <a href="#9-important-cleaning-up" class="md-nav__link">
     <span class="md-ellipsis">
       
-        9. Optional - Introduction to infrastructure as code
+        9. IMPORTANT: Cleaning up
       
     </span>
   </a>
@@ -2322,8 +2322,10 @@
 <h2 id="0-abstract">0. Abstract<a class="headerlink" href="#0-abstract" title="Permanent link">🔗</a></h2>
 <div class="admonition abstract">
 <p class="admonition-title">Abstract</p>
-<p>In this hands on you will configure your GCP account, the google cloud SDK and access the cloud console using Google Cloud Shell,
-You will also discover a very useful tool, a managed jupyter notebook service from google named Google Colab which may be very important for your future developments this year</p>
+<p>In this hands-on, you will configure your GCP account and the Google Cloud SDK.
+You will create and manage Compute Engine VMs, learn to transfer files, and
+interact with Cloud Storage. Finally, you'll run a complete ML workflow using
+a Deep Learning VM.</p>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -2341,6 +2343,17 @@ You will also discover a very useful tool, a managed jupyter notebook service fr
 <p class="admonition-title">Tip</p>
 <p>If you are lost on where you are, normally the terminal has the hostname indicated, otherwise run the command <code>hostname</code></p>
 </div>
+<div class="admonition danger">
+<p class="admonition-title">Cost Warning</p>
+<p>GCP resources cost money. Even with free credits:</p>
+<ul>
+<li><strong>Always delete VMs</strong> when done (Section 8)</li>
+<li><strong>Delete buckets</strong> you create</li>
+<li><strong>Stop your Codespace</strong> when finished</li>
+</ul>
+<p>Forgot to clean up? Your credits will drain quickly.</p>
+<p>If you reach the end of the class without having finished everything, go to the cleaning section at the end and carry it.</p>
+</div>
 <h2 id="1-create-your-gcp-account">1. Create your GCP Account<a class="headerlink" href="#1-create-your-gcp-account" title="Permanent link">🔗</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -2352,11 +2365,11 @@ You will also discover a very useful tool, a managed jupyter notebook service fr
 <li>Create an account within <a href="https://console.cloud.google.com">Google cloud Platform</a> using your ISAE e-mail</li>
 <li>Use the code given by Dennis to redeem your free credits</li>
 <li>You should have a <a href="https://cloud.google.com/free">free tier</a> available to you as well as coupons</li>
-<li>From <a href="https://console.cloud.google.com">the interface</a> you should <a href="https://cloud.google.com/resource-manager/docs/creating-managing-projects">create a project</a> with a name of your choice (it is recommended to put for example sdd2425-yourname so that it is clear)</li>
+<li>From <a href="https://console.cloud.google.com">the interface</a> you should <a href="https://cloud.google.com/resource-manager/docs/creating-managing-projects">create a project</a> with a name of your choice (it is recommended to put for example sdd2526-yourname so that it is clear)</li>
 </ul>
 <h2 id="2-reconnect-to-github-codespaces">2. (re)connect to GitHub Codespaces<a class="headerlink" href="#2-reconnect-to-github-codespaces" title="Permanent link">🔗</a></h2>
 <h3 id="if-you-still-have-your-codespace-from-last-time">If you still have your codespace from last time<a class="headerlink" href="#if-you-still-have-your-codespace-from-last-time" title="Permanent link">🔗</a></h3>
-<p>If you go to the core page of <a href="https://github.com/codespaces">https://github.com/codespaces</a> and you see an existing codespace from last week, you can restart it using the (...) menu</p>
+<p>If you go to the core page of <a href="https://github.com/codespaces">https://github.com/codespaces</a> and you see an existing codespace from the morning, you can restart it using the (...) menu</p>
 <p><img alt="img" src="slides/static/img/codespacemenu.png" /></p>
 <p>If you don't have one, recreate it (see below)</p>
 <h3 id="create-your-codespace-and-connect-to-it">Create your codespace and connect to it<a class="headerlink" href="#create-your-codespace-and-connect-to-it" title="Permanent link">🔗</a></h3>
@@ -2373,42 +2386,39 @@ You will also discover a very useful tool, a managed jupyter notebook service fr
 <p><img alt="img" src="slides/static/img/codespacevscode.png" /></p>
 <p>If you go to the core page of <a href="https://github.com/codespaces">https://github.com/codespaces</a> you should see your codespace running</p>
 <p><img alt="img" src="slides/static/img/codespace.png" /></p>
-<h2 id="3-install-google-cloud-sdk-configure-the-shell">3. Install Google Cloud SDK &amp; Configure the shell<a class="headerlink" href="#3-install-google-cloud-sdk-configure-the-shell" title="Permanent link">🔗</a></h2>
-<p>If you want to interact with GCP from your computer or codespaces, you will need to install the <a href="https://cloud.google.com/sdk">Google Cloud SDK</a>, which will also install a shell if you are on windows</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>If you have a codespace cloned from <a href="https://github.com/fchouteau/isae-cloud-computing-codespace">mine</a>, the google cloud sdk is already installed. Try <code>gcloud</code>to check that, and skip this if this returns something</p>
+<h2 id="3-configure-the-google-cloud-sdk">3. Configure the Google Cloud SDK<a class="headerlink" href="#3-configure-the-google-cloud-sdk" title="Permanent link">🔗</a></h2>
+<p>The <a href="https://cloud.google.com/sdk">Google Cloud SDK</a> is required to interact with GCP from the command line.</p>
+<div class="admonition success">
+<p class="admonition-title">Already installed</p>
+<p>If you are using the <a href="https://github.com/fchouteau/isae-cloud-computing-codespace">course Codespace</a>, the Google Cloud SDK is <strong>already installed</strong>. You can verify this by running <code>gcloud --version</code>.</p>
 </div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>You can install the cloud shell locally, but I recommend using your <strong>codespace</strong></p>
-</div>
-<details>
-<summary>Installing locally</summary>
-<p>The best ways to interact with google cloud SDK is with a terminal so in that order:</p>
+<p>Run <code>gcloud init</code> in your terminal to configure the SDK with your account:</p>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>init
+</code></pre></div>
+<p>You should see a terminal with a link. Click on the link, login with your Google account, then copy the token back to your Codespace.</p>
+<p><img alt="logintoken" src="slides/static/img/login.png" /></p>
+<p>Your GitHub Codespace is now configured with your Google Cloud Platform credentials.</p>
+<details class="info">
+<summary>Reference: Installing gcloud CLI (not needed for this hands-on)</summary>
+<p>If you need to install the Google Cloud SDK on your own machine later:</p>
 <ul>
-<li>Ubuntu / Debian <a href="https://cloud.google.com/sdk/docs/install#deb">https://cloud.google.com/sdk/docs/install#deb</a></li>
-<li>Other Linux (either VM or native): <a href="https://cloud.google.com/sdk/docs/install#linux">https://cloud.google.com/sdk/docs/install#linux</a></li>
+<li>Ubuntu / Debian: <a href="https://cloud.google.com/sdk/docs/install#deb">https://cloud.google.com/sdk/docs/install#deb</a></li>
+<li>Other Linux: <a href="https://cloud.google.com/sdk/docs/install#linux">https://cloud.google.com/sdk/docs/install#linux</a></li>
 <li>MacOS: <a href="https://cloud.google.com/sdk/docs/install#mac">https://cloud.google.com/sdk/docs/install#mac</a></li>
-<li>Windows Subsystem for Linux: see Linux</li>
 <li>Windows: <a href="https://cloud.google.com/sdk/docs/install#windows">https://cloud.google.com/sdk/docs/install#windows</a></li>
 </ul>
 </details>
-<details>
-<summary>Installing on codespace</summary>
-<p>If you are on codespace, run the commands below to install the gcloud tool to your machine</p>
-<p>Note : If you used the custom codespace, it should already be installed, try gcloud init directly</p>
-<div class="highlight"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;deb https://packages.cloud.google.com/apt cloud-sdk main&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>-a<span class="w"> </span>/etc/apt/sources.list.d/google-cloud-sdk.list
-curl<span class="w"> </span>https://packages.cloud.google.com/apt/doc/apt-key.gpg<span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>apt-key<span class="w"> </span>add<span class="w"> </span>-
-sudo<span class="w"> </span>apt-get<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>google-cloud-cli
-</code></pre></div>
-</details>
-<p>Then run <code>gcloud init</code> in your terminal to configure the <a href="https://cloud.google.com/sdk/docs/initializing">google cloud sdk</a> with your account</p>
-<p>You should at some point see at terminal with a link. Click on the link and login with your google accound, then copy the token to your codespace.</p>
-<p><img alt="logintoken" src="slides/static/img/login.png" /></p>
-<p>Your github codespace is now configured with your google cloud platform credentials</p>
 <h2 id="4-my-first-google-compute-engine-instance">4. My first Google Compute Engine Instance<a class="headerlink" href="#4-my-first-google-compute-engine-instance" title="Permanent link">🔗</a></h2>
-<p>First, we will make our first steps by creating a compute engine instance (a vm) using the console, connecting to it via SSH, interacting with it, uploading some files, and we will shut it down and make the magic happen by resizing it</p>
+<div class="admonition tip">
+<p class="admonition-title">Learning objectives</p>
+<ul>
+<li>Create a VM using the GCP Console</li>
+<li>Connect via SSH from your Codespace</li>
+<li>Understand cloud elasticity (resizing VMs)</li>
+<li>Transfer files between local machine and cloud VM</li>
+</ul>
+</div>
+<p>First, we will make our first steps by creating a compute engine instance (a VM) using the console, connecting to it via SSH, interacting with it, uploading some files, and we will shut it down and make the magic happen by resizing it.</p>
 <ul>
 <li>What is <a href="https://cloud.google.com/compute/docs/concepts">google cloud compute engine ?</a> try to describe it with your own words</li>
 </ul>
@@ -2420,10 +2430,10 @@ sudo<span class="w"> </span>apt-get<span class="w"> </span>update<span class="w"
 <li>
 <p>Create an instance with the following parameters</p>
 <ul>
-<li>type: n1-standard-1</li>
-<li>zone: europe-west1-b (Belgium)</li>
+<li>type: e2-standard-2</li>
+<li>zone: europe-west9-a (Paris)</li>
 <li>os: ubuntu 22.04 x86</li>
-<li>boot disk size: 10 Gb</li>
+<li>boot disk size: 10 GB</li>
 <li>boot disk type: pd-standard</li>
 </ul>
 </li>
@@ -2431,28 +2441,39 @@ sudo<span class="w"> </span>apt-get<span class="w"> </span>update<span class="w"
 <li><strong>DO NOT SHUT IT DOWN</strong> for now</li>
 </ul>
 <details class="note">
-<summary>Note</summary>
-<p>If you were using the command line, you would have done this</p>
-<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>create<span class="w"> </span><span class="o">{</span>name<span class="o">}</span><span class="w"> </span>--project<span class="o">={</span>your-project<span class="o">}</span><span class="w"> </span>--zone<span class="o">={</span>your-zone<span class="o">}</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--machine-type<span class="o">=</span>n1-standard-1<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--image<span class="o">=</span>ubuntu-2204-jammy-v20231030<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--image-project<span class="o">=</span>ubuntu-os-cloud
-<span class="w">  </span>--create-disk<span class="o">=</span>auto-delete<span class="o">=</span>yes,boot<span class="o">=</span>yes,device-name<span class="o">=</span>dev-instance-<span class="o">{</span>index<span class="o">}</span>,image<span class="o">=</span>projects/ubuntu-os-cloud/global/images/ubuntu-2204-jammy-v20231030,mode<span class="o">=</span>rw,size<span class="o">=</span><span class="m">10</span>,type<span class="o">=</span>projects/sdd2324/zones/<span class="o">{</span>your-zone<span class="o">}</span>/diskTypes/pd-standard<span class="w"> </span><span class="se">\</span>
+<summary>CLI equivalent</summary>
+<p>If you were using the command line, you would run:</p>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>create<span class="w"> </span><span class="o">{</span>name<span class="o">}</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--project<span class="o">={</span>your-project<span class="o">}</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--zone<span class="o">=</span>europe-west9-a<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--machine-type<span class="o">=</span>e2-standard-2<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image-family<span class="o">=</span>ubuntu-2204-lts<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image-project<span class="o">=</span>ubuntu-os-cloud<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--boot-disk-size<span class="o">=</span>10GB<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--boot-disk-type<span class="o">=</span>pd-standard
 </code></pre></div>
 </details>
 <h3 id="4b-connecting-to-ssh">4b. Connecting to SSH<a class="headerlink" href="#4b-connecting-to-ssh" title="Permanent link">🔗</a></h3>
 <ul>
 <li>
-<p>Connect to ssh from the github codespace</p>
+<p>Connect to SSH from the GitHub Codespace</p>
 <details class="solution">
 <summary>Solution</summary>
 <p><code>gcloud compute ssh ${MACHINE-NAME}</code></p>
 </details>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>We are using <code>google compute ssh</code> instead of ssh. This is an automated tool that takes care of locating your machine in GCP and transferring the keys</p>
-</div>
 </li>
+</ul>
+<details class="info">
+<summary>Why use gcloud compute ssh instead of regular ssh?</summary>
+<p><code>gcloud compute ssh</code> is a wrapper around standard SSH that:</p>
+<ol>
+<li><strong>Automatically finds your VM</strong> - no need to know the IP address</li>
+<li><strong>Handles SSH key management</strong> - creates and distributes keys automatically</li>
+<li><strong>Works through IAP</strong> - can connect even without public IP (more secure)</li>
+</ol>
+<p>Under the hood, it's essentially: <code>ssh -i ~/.ssh/google_compute_engine username@&lt;vm-ip&gt;</code></p>
+</details>
+<ul>
 <li>
 <p>Check available disk space</p>
 <details class="solution">
@@ -2486,7 +2507,7 @@ sudo<span class="w"> </span>apt-get<span class="w"> </span>update<span class="w"
 <ul>
 <li>Shutdown the VM (from the web browser), check the previous codelab to see how to do it</li>
 <li>Select it and click on EDIT</li>
-<li>Change the machine type to <code>n1-standard-2</code> (<a href="https://cloud.google.com/compute/docs/instances/changing-machine-type-of-stopped-instance">link to documentation</a>)</li>
+<li>Change the machine type to <code>e2-standard-4</code> (<a href="https://cloud.google.com/compute/docs/instances/changing-machine-type-of-stopped-instance">link to documentation</a>)</li>
 <li>Relaunch it, reconnect to it and try to check using <code>htop</code> the number of cores &amp; RAM available</li>
 <li>Note : If you run <code>cat /proc/cpuinfo</code> again you will see that you are running on the same hardware !</li>
 </ul>
@@ -2499,8 +2520,7 @@ sudo<span class="w"> </span>apt-get<span class="w"> </span>update<span class="w"
 <p>If you use cloud shell you can do it as well : create a dummy file in cloud shell</p>
 </li>
 <li>
-<p toc="toc">Follow <a href="https://cloud.google.com/compute/docs/instances/transfer-files#transfergcloud">this link</a> to learn how to use the gcloud cli tool to transfer files to your instance
- TOC</p>
+<p>Follow <a href="https://cloud.google.com/compute/docs/instances/transfer-files#transfergcloud">this link</a> to learn how to use the gcloud CLI tool to transfer files to your instance</p>
 </li>
 <li>
 <p>For experts, it's possible to do it manually using <a href="https://phoenixnap.com/kb/how-to-rsync-over-ssh">rsync from ssh</a> or <a href="https://cloud.google.com/compute/docs/instances/transfer-files#scp">scp</a></p>
@@ -2533,76 +2553,138 @@ sudo<span class="w"> </span>apt-get<span class="w"> </span>update<span class="w"
 </li>
 </ul>
 <p>Congratulations :)</p>
+<div class="admonition success">
+<p class="admonition-title">What you learned in this section</p>
+<ul>
+<li><strong>VM creation</strong>: Using both the Console (GUI) and CLI to create compute instances</li>
+<li><strong>SSH access</strong>: Connecting to remote VMs with <code>gcloud compute ssh</code></li>
+<li><strong>Cloud elasticity</strong>: Resizing VMs on-the-fly (more CPU/RAM without losing data)</li>
+<li><strong>File transfer</strong>: Using <code>gcloud compute scp</code> to move files to/from VMs</li>
+<li><strong>Persistent sessions</strong>: Using <code>tmux</code> to keep processes running after disconnection</li>
+</ul>
+</div>
 <h2 id="5-interacting-with-google-cloud-storage">5. Interacting with Google Cloud Storage<a class="headerlink" href="#5-interacting-with-google-cloud-storage" title="Permanent link">🔗</a></h2>
-<p>Here we will discover google cloud storage, upload some files from your computer and download them from your instance in the cloud</p>
+<div class="admonition tip">
+<p class="admonition-title">Learning objectives</p>
+<ul>
+<li>Understand object storage concepts (buckets, objects)</li>
+<li>Use the GCP Console to manage storage</li>
+<li>Use the <code>gcloud storage</code> CLI for file operations</li>
+<li>Configure VM access scopes for Cloud Storage</li>
+</ul>
+</div>
+<p>Here we will discover Google Cloud Storage, upload some files from your computer and download them from your instance in the cloud.</p>
 <ul>
 <li>
-<p>What is <a href="https://cloud.google.com/storage">Google Cloud Storage ?</a> Try to describe it with your own words</p>
+<p>What is <a href="https://cloud.google.com/storage">Google Cloud Storage?</a> Try to describe it in your own words.</p>
 </li>
 <li>
-<p>Use <a href="https://cloud.google.com/storage/docs/discover-object-storage-console">this tutorial</a> to upload something from your computer to google cloud storage from the web browser (<strong>DO NOT DELETE THE FILES YET</strong>)</p>
+<p>Use <a href="https://cloud.google.com/storage/docs/discover-object-storage-console">this tutorial</a> to upload something from your computer to Google Cloud Storage from the web browser (<strong>DO NOT DELETE THE FILES YET</strong>)</p>
 </li>
 </ul>
-<p>Now we will download it using the google cloud CLI tool. Here's <a href="https://cloud.google.com/storage/docs/uploading-objects#gsutil">the documentation</a></p>
-<p>Follow the <a href="https://cloud.google.com/storage/docs/discover-object-storage-gsutil">tutorial</a> to learn how to do what you just did, but this time using <code>gsutil</code> from your codespace</p>
+<p>Now we will download it using the <code>gcloud storage</code> CLI. Here's <a href="https://cloud.google.com/storage/docs/discover-object-storage-gcloud">the documentation</a>.</p>
+<p>Common commands:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># List buckets</span>
+gcloud<span class="w"> </span>storage<span class="w"> </span>ls
+
+<span class="c1"># List contents of a bucket</span>
+gcloud<span class="w"> </span>storage<span class="w"> </span>ls<span class="w"> </span>gs://your-bucket-name
+
+<span class="c1"># Upload a file</span>
+gcloud<span class="w"> </span>storage<span class="w"> </span>cp<span class="w"> </span>local-file.txt<span class="w"> </span>gs://your-bucket-name/
+
+<span class="c1"># Download a file</span>
+gcloud<span class="w"> </span>storage<span class="w"> </span>cp<span class="w"> </span>gs://your-bucket-name/remote-file.txt<span class="w"> </span>./
+</code></pre></div>
 <ul>
 <li>List the content of the bucket you just created (if you deleted it previously, create a new one)</li>
-<li>Upload a file to a bucket </li>
+<li>Upload a file to a bucket</li>
 <li>Download a file from a bucket</li>
 </ul>
-<p><strong>Optional : What if we want to do the same from the GCE instance ?</strong></p>
+<p><strong>Optional: What if we want to do the same from the GCE instance?</strong></p>
 <ul>
 <li>
 <p>Now go back to your machine</p>
 </li>
 <li>
-<p>Try to list bucket, download and upload files</p>
+<p>Try to list buckets, download and upload files</p>
 </li>
 <li>
-<p>Is it possible ?</p>
+<p>Is it possible?</p>
 </li>
 <li>
-<p>If not, it's because you have to allow the instance to access google cloud storage</p>
+<p>If not, it's because you have to allow the instance to access Google Cloud Storage</p>
 </li>
 <li>
 <p>Shutdown the VM and edit it (like we did when we resized the instance)</p>
 </li>
 <li>
-<p>Check "access scopes", select "set access for each api", and select "storage / admin"</p>
+<p>Check "access scopes", select "set access for each API", and select "storage / admin"</p>
 </li>
+</ul>
+<details class="info">
+<summary>What are access scopes?</summary>
+<p><strong>Access scopes</strong> are a legacy way to control what GCP APIs a VM can access.</p>
+<p>By default, VMs cannot access Cloud Storage. You must explicitly grant access:</p>
+<ul>
+<li><code>storage-ro</code> - Read-only access to buckets</li>
+<li><code>storage-rw</code> - Read and write access</li>
+<li><code>storage-full</code> - Full control (including delete, set ACLs)</li>
+</ul>
+<p>Modern best practice: Use service accounts with IAM roles instead.</p>
+</details>
+<ul>
 <li>
-<p>Now restart you machine, connect back to it. You should be able to upload to google cloud storage now files now</p>
+<p>Now restart your machine, connect back to it. You should be able to upload to Google Cloud Storage now</p>
 </li>
 <li>
 <p>You can delete the VM as well, we will not use it</p>
 </li>
 </ul>
+<div class="admonition success">
+<p class="admonition-title">What you learned in this section</p>
+<ul>
+<li><strong>Object storage vs file storage</strong>: Buckets contain objects (files), accessed via URLs</li>
+<li><strong>Cloud Storage CLI</strong>: Using <code>gcloud storage ls</code>, <code>cp</code> for uploads/downloads</li>
+<li><strong>Access scopes</strong>: VMs need explicit permissions to access other GCP services</li>
+<li><strong>Data pipeline pattern</strong>: Upload data to storage, process on VMs, store results back</li>
+</ul>
+</div>
 <h2 id="6-deep-learning-vm-ssh-and-port-forwarding">6. Deep Learning VM, SSH and Port Forwarding<a class="headerlink" href="#6-deep-learning-vm-ssh-and-port-forwarding" title="Permanent link">🔗</a></h2>
-<h3 id="6a-deep-learning-vm">6a. deep learning vm<a class="headerlink" href="#6a-deep-learning-vm" title="Permanent link">🔗</a></h3>
-<p>Here we will use the google cloud sdk to create a more complex VM with a pre-installed image and connect to its jupyter server</p>
-<p>Google Cloud Platform comes with a set of services targeted at data scientists called <a href="https://cloud.google.com/ai-platform">AI Platform</a>, among them are <a href="https://cloud.google.com/ai-platform/deep-learning-vm/docs">Deep Learning VMs</a> which are essentially preinstalled VMs (more or less the same configuration as google colab) with some bonuses.</p>
+<div class="admonition tip">
+<p class="admonition-title">Learning objectives</p>
+<ul>
+<li>Understand pre-configured VM images (Deep Learning VMs)</li>
+<li>Create VMs using the <code>gcloud</code> CLI instead of the Console</li>
+<li>Use SSH port forwarding to access remote Jupyter servers</li>
+<li>Understand the double tunneling: Codespace → GCE VM</li>
+</ul>
+</div>
+<h3 id="6a-deep-learning-vm">6a. Deep Learning VM<a class="headerlink" href="#6a-deep-learning-vm" title="Permanent link">🔗</a></h3>
+<p>Here we will use the Google Cloud SDK to create a more complex VM with a pre-installed image and connect to its Jupyter server.</p>
+<p>Google Cloud Platform comes with a set of services targeted at data scientists called <a href="https://cloud.google.com/vertex-ai">Vertex AI</a>, among them are <a href="https://cloud.google.com/deep-learning-vm/docs">Deep Learning VMs</a> which are VMs pre-installed with ML frameworks (TensorFlow, PyTorch, etc.) and Jupyter.</p>
 <ul>
 <li>What are "Deep Learning VMs" ? Try to use your own words</li>
 <li>What would be the alternative if you wanted to get a machine with the same installation ?</li>
 </ul>
 <h3 id="6b-create-a-google-compute-engine-instance-using-the-command-line">6b. create a google compute engine instance using the command line<a class="headerlink" href="#6b-create-a-google-compute-engine-instance-using-the-command-line" title="Permanent link">🔗</a></h3>
-<p>Instead of using the browser to create this machine, we will be using the <a href="https://cloud.google.com/ai-platform/deep-learning-vm/docs/cli">CLI to create instances</a></p>
-<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">INSTANCE_NAME</span><span class="o">=</span><span class="s2">&quot;fch-dlvm-1&quot;</span><span class="w"> </span><span class="c1"># &lt;--- RENAME THIS !!!!!!!!!!</span>
+<p>Instead of using the browser to create this machine, we will be using the <a href="https://cloud.google.com/deep-learning-vm/docs/cli">CLI to create instances</a></p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">INSTANCE_NAME</span><span class="o">=</span><span class="s2">&quot;yourname-dlvm&quot;</span><span class="w"> </span><span class="c1"># &lt;--- RENAME THIS !!!!!!!!!!</span>
 
 gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span class="w"> </span>create<span class="w"> </span><span class="nv">$INSTANCE_NAME</span><span class="w"> </span><span class="se">\</span>
-<span class="w">        </span>--zone<span class="o">=</span><span class="s2">&quot;europe-west1-b&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">        </span>--image-family<span class="o">=</span><span class="s2">&quot;common-cpu&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">        </span>--image-project<span class="o">=</span><span class="s2">&quot;deeplearning-platform-release&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--zone<span class="o">=</span><span class="s2">&quot;europe-west9-a&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--image-family<span class="o">=</span><span class="s2">&quot;common-cpu-debian-11&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--image-project<span class="o">=</span><span class="s2">&quot;ml-images&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">        </span>--maintenance-policy<span class="o">=</span><span class="s2">&quot;TERMINATE&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">        </span>--scopes<span class="o">=</span><span class="s2">&quot;storage-rw&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">        </span>--machine-type<span class="o">=</span><span class="s2">&quot;n1-standard-1&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>--machine-type<span class="o">=</span><span class="s2">&quot;e2-standard-2&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">        </span>--boot-disk-size<span class="o">=</span><span class="s2">&quot;50GB&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">        </span>--boot-disk-type<span class="o">=</span><span class="s2">&quot;pd-standard&quot;</span>
 </code></pre></div>
 <ul>
 <li>Notice the similarities between the first VM you created and this one,</li>
 <li>What changed ?</li>
-<li>If you want to learn more about compute images, image families etc... <a href="https://cloud.google.com/ai-platform/deep-learning-vm/docs/concepts-images">go here</a></li>
+<li>If you want to learn more about compute images, image families, etc., <a href="https://cloud.google.com/deep-learning-vm/docs/images">go here</a></li>
 </ul>
 <h3 id="6c-connect-with-ssh-to-this-machine-with-port-forwarding">6c. connect with ssh to this machine with port forwarding<a class="headerlink" href="#6c-connect-with-ssh-to-this-machine-with-port-forwarding" title="Permanent link">🔗</a></h3>
 <ul>
@@ -2613,12 +2695,12 @@ gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span clas
 <p>Forward the port 8888 when you're connecting to the instance</p>
 </li>
 <li>
-<p>Documentation <a href="https://cloud.google.com/ai-platform/deep-learning-vm/docs">forward some ports</a> as well</p>
+<p>Documentation on <a href="https://cloud.google.com/deep-learning-vm/docs/jupyter">port forwarding</a> as well</p>
 </li>
 </ul>
 <details class="solution">
 <summary>Solution</summary>
-<p><code>gcloud compute ssh user@machine-name --zone=europe-west1-b -- -L 8888:localhost:8888</code></p>
+<p><code>gcloud compute ssh $INSTANCE_NAME --zone=europe-west9-a -- -L 8888:localhost:8888</code></p>
 </details>
 <p>If you are in codespace, use the port forwarding utility, add a new port (8888). It may be done automatically.</p>
 <ul>
@@ -2626,7 +2708,7 @@ gcloud<span class="w"> </span>compute<span class="w"> </span>instances<span clas
 <p>Explore the machine the same way we did previously</p>
 </li>
 <li>
-<p>You can see you have a conda envirnoment installed. Try to query the list of things installed</p>
+<p>You can see you have a conda environment installed. Try to query the list of things installed</p>
 </li>
 </ul>
 <details class="solution">
@@ -2661,16 +2743,33 @@ What is the difference between this and the jupyter lab we launched from codespa
 </div>
 <p><img alt="tunnels" src="slides/static/img/codespaceception.png" /></p>
 <p>Don't disconnect from the VM, we will continue below</p>
-<h2 id="7-end-to-end-example">7. End to end example<a class="headerlink" href="#7-end-to-end-example" title="Permanent link">🔗</a></h2>
-<p>We will replicate the following setup (simplified)</p>
+<div class="admonition success">
+<p class="admonition-title">What you learned in this section</p>
+<ul>
+<li><strong>Pre-configured images</strong>: Deep Learning VMs come with ML frameworks pre-installed</li>
+<li><strong>CLI-based provisioning</strong>: Creating VMs with <code>gcloud compute instances create</code></li>
+<li><strong>SSH port forwarding</strong>: The <code>-L 8888:localhost:8888</code> pattern to tunnel services</li>
+<li><strong>Double tunneling</strong>: Codespace → GCE VM chain for accessing remote Jupyter</li>
+</ul>
+</div>
+<h2 id="7-end-to-end-example">7. End-to-End Example<a class="headerlink" href="#7-end-to-end-example" title="Permanent link">🔗</a></h2>
+<div class="admonition tip">
+<p class="admonition-title">Learning objectives</p>
+<ul>
+<li>Combine all skills: VMs, SSH, file transfer, Cloud Storage</li>
+<li>Run an ML training job on a remote machine</li>
+<li>Transfer artifacts (model weights) via Cloud Storage</li>
+</ul>
+</div>
+<p>We will replicate the following setup (simplified):</p>
 <p><img alt="setup" src="slides/static/img/gce_workflow.png" /></p>
 <ul>
-<li>Your development machine (the github codespace) has some training code</li>
+<li>Your development machine (the GitHub Codespace) has some training code</li>
 <li>You have a "high performance" machine in the cloud</li>
 <li>You want to transfer the training code to the VM</li>
-<li>You want to run the training in a remote machine</li>
+<li>You want to run the training on a remote machine</li>
 <li>
-<p>Once the training is done you want to upload the model weights to google cloud storage</p>
+<p>Once the training is done you want to upload the model weights to Google Cloud Storage</p>
 </li>
 <li>
 <p>In your codespace, in a new folder (eg. <code>training</code>), copy the content of <a href="https://github.com/pytorch/examples/tree/main/mnist">this</a></p>
@@ -2690,7 +2789,7 @@ What is the difference between this and the jupyter lab we launched from codespa
 <p>Once it has finished, you should see a new file, the model weights <code>mnist_cnn.pt</code></p>
 </li>
 <li>
-<p>From the GCE VM : Upload the weights to the google cloud storage bucket you previously created</p>
+<p>From the GCE VM: Upload the weights to the Google Cloud Storage bucket you previously created</p>
 </li>
 </ul>
 <details class="solution">
@@ -2698,58 +2797,81 @@ What is the difference between this and the jupyter lab we launched from codespa
 <p><code>gcloud storage cp mnist_cnn.pt gs://(...)</code></p>
 </details>
 <ul>
-<li>From the GitHubCodespace : Download the model weights from google cloud storage</li>
+<li>From the GitHub Codespace: Download the model weights from Google Cloud Storage</li>
 </ul>
 <details class="solution">
 <summary>Solution</summary>
 <p><code>gcloud storage cp gs://(...) mnist_cnn.pt</code></p>
 </details>
 <div class="admonition success">
-<p class="admonition-title">Success</p>
-<p>yay ! Don't forget to cleanup</p>
+<p class="admonition-title">What you learned in this section</p>
+<ul>
+<li><strong>End-to-end ML workflow</strong>: Code → Remote execution → Artifact storage → Retrieval</li>
+<li><strong>Cloud Storage as artifact store</strong>: Central location for model weights and data</li>
+<li><strong>Combining skills</strong>: SSH, file transfer, and storage work together</li>
+<li><strong>Production patterns</strong>: This is how real ML pipelines operate at scale</li>
+</ul>
 </div>
-<h2 id="8-important-cleaning-up">8. IMPORTANT : Cleaning up<a class="headerlink" href="#8-important-cleaning-up" title="Permanent link">🔗</a></h2>
+<h2 id="8-introduction-to-infrastructure-as-code">8. Introduction to Infrastructure as Code<a class="headerlink" href="#8-introduction-to-infrastructure-as-code" title="Permanent link">🔗</a></h2>
+<div class="admonition tip">
+<p class="admonition-title">Learning objectives</p>
+<ul>
+<li>Understand the concept of Infrastructure as Code (IaC)</li>
+<li>Learn about declarative infrastructure definitions</li>
+<li>See how to automate cloud resource provisioning</li>
+</ul>
+</div>
+<p>So far, you have been creating VMs manually (via Console or CLI). In production environments, infrastructure is defined in <strong>configuration files</strong> that can be versioned and automated.</p>
+<p><a href="https://cloud.google.com/deployment-manager/docs/quickstart">This tutorial</a> will guide you through Google Cloud Deployment Manager, which is a way to deploy Google Compute Engine instances using configuration files.</p>
+<div class="admonition note">
+<p class="admonition-title">Modern alternatives</p>
+<p>Google Cloud Deployment Manager is GCP-specific. In practice, many teams use <strong>Terraform</strong> which works across all cloud providers (AWS, Azure, GCP).</p>
+</div>
+<ul>
+<li>Don't forget to adapt machine configurations and zone to your use case (see above)</li>
+</ul>
+<p>If you run this, <strong>don't forget to clean everything up afterwards!</strong></p>
+<div class="admonition success">
+<p class="admonition-title">What you learned in this section</p>
+<ul>
+<li><strong>Infrastructure as Code (IaC)</strong>: Define infrastructure in version-controlled config files</li>
+<li><strong>Reproducibility</strong>: Same config = same infrastructure, every time</li>
+<li><strong>Automation</strong>: No more clicking through UIs for repetitive tasks</li>
+<li><strong>Industry tools</strong>: Deployment Manager (GCP), Terraform (multi-cloud)</li>
+</ul>
+</div>
+<h2 id="9-important-cleaning-up">9. IMPORTANT: Cleaning up<a class="headerlink" href="#9-important-cleaning-up" title="Permanent link">🔗</a></h2>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <ul>
-<li><strong>DELETE ALL THE BUCKES YOU CREATED</strong></li>
+<li><strong>DELETE ALL THE BUCKETS YOU CREATED</strong></li>
 <li><strong>DELETE ALL THE GCP INSTANCES YOU CREATED</strong></li>
 <li><strong>SHUTDOWN YOUR CODESPACE</strong></li>
 </ul>
 </div>
-<p>How to shutdown codespaces :</p>
+<p>How to shutdown Codespaces:</p>
 <p><img alt="stop" src="slides/static/img/stop.png" /></p>
 <ul>
-<li>Click on stop codespace to shut it down (you "pay" for the disk with your free credits)</li>
-<li>Click on kill codespace to delete it</li>
+<li>Click on "Stop codespace" to shut it down (you "pay" for the disk with your free credits)</li>
+<li>Click on "Delete" to remove it completely</li>
 </ul>
-<h2 id="9-optional-introduction-to-infrastructure-as-code">9. Optional - Introduction to infrastructure as code<a class="headerlink" href="#9-optional-introduction-to-infrastructure-as-code" title="Permanent link">🔗</a></h2>
-<ul>
-<li>
-<p><a href="https://cloud.google.com/deployment-manager/docs/quickstart">This tutorial</a> will guide you through google cloud deployment manager, which is a way to deploy google compute engine instances using configuration files</p>
-</li>
-<li>
-<p>Don't forget to adapt machine configurations and zone to your use case (see above)</p>
-</li>
-</ul>
-<p>If you run this, don't forget to clean everything up afterwards</p>
 <h2 id="10-optional-managed-database">10. Optional - Managed Database<a class="headerlink" href="#10-optional-managed-database" title="Permanent link">🔗</a></h2>
 <ul>
 <li>
-<p>I think you've just done a class on SQL databases</p>
+<p>You have just completed a class on SQL databases</p>
 </li>
 <li>
-<p>Here are the <a href="https://console.cloud.google.com/sql/instances">managed SQL services of google cloud</a></p>
+<p>Here are the <a href="https://console.cloud.google.com/sql/instances">managed SQL services of Google Cloud</a></p>
 </li>
 </ul>
 <div class="admonition question">
 <p class="admonition-title">Question</p>
-<p>Can you describe what it is ?
-What do you pay to google ? How much does it cost ?
-What is a managed service in cloud vocabulary ?</p>
+<p>Can you describe what it is?
+What do you pay to Google? How much does it cost?
+What is a "managed service" in cloud vocabulary?</p>
 </div>
 <ul>
-<li>If you still have some code to interact with a database, you can try launching one here and redoing your classes</li>
+<li>If you still have some code to interact with a database, you can try launching one here and redoing your exercises</li>
 </ul>
 
 
