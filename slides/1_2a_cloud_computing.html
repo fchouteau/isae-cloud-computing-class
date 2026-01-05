@@ -51,7 +51,7 @@ But it's a bit bigger...
 
 <!--v-->
 
-![datacenters](https://cloud.google.com/images/locations/regions.png)
+![gcloud_datacenter.png](static/img/gcloud_datacenter.png)
 
 Google Cloud Platform datacenters locations
 
@@ -61,10 +61,9 @@ Google Cloud Platform datacenters locations
 
 **Todd Hoff in "Explain the Cloud like I'm 10"**
 
-<!--s-->
+<!--v-->
 
 ### What about "Cloud Computing" ?
-
 
 For us the cloud is a set of *cloud providers* renting *cloud services* 
 
@@ -114,7 +113,7 @@ Hardware visualisation: Server Example
 
 <!--v-->
 
-![vritualization](https://miro.medium.com/max/10698/1*wE7TrQmFyRTDwh6VpbkbMQ.png)
+![virtualisation](https://miro.medium.com/max/10698/1*wE7TrQmFyRTDwh6VpbkbMQ.png)
 
 <!--v-->
 
@@ -130,13 +129,13 @@ Hardware visualisation: Server Example
 
 #### Hypervisor : KVM example (Kernel Virtual Machine)
 
-![kvm](https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Kernel-based_Virtual_Machine.svg/400px-Kernel-based_Virtual_Machine.svg.png)
+![kvm](https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Kernel-based_Virtual_Machine.svg/400px-Kernel-based_Virtual_Machine.svg.png) <!-- .element: height="30%" width="30%" -->
 
 <!--v-->
 
 #### Nested Hypervisors : Google Compute Engine
 
-![gce](https://cloud.google.com/compute/images/nested-virtualization-diagram.svg)
+![gce](https://docs.cloud.google.com/static/compute/images/nested-virtualization-diagram.svg?hl=fr) <!-- .element: height="30%" width="30%" -->
 
 <!--v-->
 
@@ -263,10 +262,15 @@ Cloud providers are offering services with increasing layers of abstraction...
 
 <!--v-->
 
-#### Useful analogy
+#### Useful analogy (1)
 
-![cloud](static/img/pizzaasaservicev2.jpg)  <!-- .element: height="65%" width="65%" -->
+![paas](https://www.optimizely.com/contentassets/dc07499e97874038afcea97b4c89b785/3-pizza-as-a-service.png)  <!-- .element: height="50%" width="50%" -->
 
+<!--v-->
+
+#### Useful analogy (2)
+
+![paas2](static/img/pizzaasaservicev2.jpg)  <!-- .element: height="50%" width="50%" -->
 
 <!--s-->
 
@@ -274,11 +278,13 @@ Cloud providers are offering services with increasing layers of abstraction...
 
 <!--v-->
 
+#### Major cloud providers
+
 ![cloud_vendors](https://dgtlinfra.com/wp-content/uploads/2022/06/Top-10-Cloud-Service-Providers-Globally-in-2022.jpg.webp)  <!-- .element: height="50%" width="50%" -->
 
 <!--v-->
 
-AI Cloud Providers
+#### AI Cloud Providers
 
 ![paperspace](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*vuacjjmtbLQEoXoIbbFVNQ.png)  <!-- .element: height="50%" width="50%" -->
 
@@ -288,7 +294,7 @@ AI Cloud Providers
 
 <!--v-->
 
-🐓🧀🐸🇫🇷
+#### French Cloud Providers 🐓🧀🐸🇫🇷
 
 <img src="https://www.comptoir-hardware.com/images/stories/_logos/ovhcloud.png" alt="" width="20%" height="20%" style="background:none; border:none; box-shadow:none;"/>
 
@@ -296,21 +302,24 @@ AI Cloud Providers
 
 <img src="https://fr.outscale.com/wp-content/uploads/2018/08/3DS_OUTSCALE_Dark-Blue_RGB.png" alt="" width="20%" height="20%" style="background:none; border:none; box-shadow:none;"/>
 
-<img src="https://cloud.orange.com/ui/app/static/assets/brand/logo_header_login.png" alt="" width="20%" height="20%" style="background:none; border:none; box-shadow:none;"/>
+<img src="https://solnum.b-cdn.net/wp-content/uploads/2024/09/bleu.png" alt="" width="20%" height="20%" style="background:none; border:none; box-shadow:none;"/>
 
-OVH went public in 2021
-
-Scaleway is leading the charge for AI in France (& Europe)
+- OVH went public in 2021
+- Scaleway is leading the charge for AI in France (& Europe)
+- Outscale is focusing on SecNumCloud
+- BleuCloud is CapGemini x Orange
 
 <!--v-->
 
-🐓🧀🐸🇫🇷
+#### French Cloud Providers 🐓🧀🐸🇫🇷
 
-[Thales Cloud Souverain](https://thales-group.prezly.com/thales-et-google-cloud-annoncent-un-partenariat-strategique-pour-developper-conjointement-un--cloud-de-confiance--en-france#)
+- Cloud Act !
+- SecNumCloud : ANSSI's security qualification for cloud providers handling sensitive French data
 
-[OVH x Google Cloud](https://corporate.ovhcloud.com/fr/newsroom/news/ovhcloud-and-google-cloud-announce-strategic-partnership-co-build-trusted-cloud-solution-europe/)
-
-[Scaleway et l'IA](https://www.lemonde.fr/economie/article/2023/09/26/xavier-niel-annonce-des-investissements-strategiques-dans-l-ia_6191008_3234.html)
+| Project | Partners | Tech | Status |
+|:---:|---|---|---|
+| Bleu | Orange + Capgemini (100% French ownership), <br>Microsoft as tech partner (not shareholder) | Azure + M365 | Commercial operations launched 2024.<br>First clients include EDF, Dassault Aviation. |
+| S3NS. | Thales (majority) <br>Google Cloud (minority shareholder, <24%) | GCP | SecNumCloud 3.2 obtained December 2024.<br>Offers IaaS/PaaS/CaaS |
 
 <!--v-->
 
@@ -322,11 +331,24 @@ Scaleway is leading the charge for AI in France (& Europe)
 
 <!--v-->
 
-![cloud](https://cdn.statcdn.com/Infographic/images/normal/18819.jpeg) <!-- .element: height="50%" width="50%" -->
+#### Cloud Market Share (World)
+
+![cloud](https://cdn.statcdn.com/Infographic/images/normal/18819.jpeg) <!-- .element: height="40%" width="40%" -->
+
+[source, 2025](https://www.statista.com/chart/18819/worldwide-market-share-of-leading-cloud-infrastructure-service-providers/)
 
 <!--v-->
 
-For France, 
+#### Cloud Market Share (Europe)
+
+![europan_cloud](https://srgresearch.s3.amazonaws.com/uploads/Euro_cloud_share.jpg?AWSAccessKeyId=AKIAJ5V27TDV4ZXYJ4KQ&Signature=tNIxhaskmvvVmo1YzApb%2Bo2Pn9U%3D&Expires=1767565544)  <!-- .element: height="40%" width="40%" -->
+
+[source, 2025](https://www.srgresearch.com/articles/european-cloud-providers-local-market-share-now-holds-steady-at-15)
+
+<!--v-->
+
+#### Cloud Market Share (France)
+
 ![france](static/img/cloudshare2022.webp) <!-- .element: height="50%" width="50%" -->
 
 [source, 2021](https://www.larevuedudigital.com/le-marche-du-cloud-concentre-en-france-entre-amazon-microsoft-et-google/)
@@ -446,6 +468,18 @@ resources:
 
 <!--v-->
 
+#### Cloud Native Computing Foundation
+
+![CNCF](https://www.lemagit.fr/visuals/LeMagIT/hero_article/CNCF-Logo.jpg)
+
+<!--v-->
+
+#### Cloud Native Computing Foundation
+
+![CNCF](https://www.civo.com/assets/public/academy/courses/kubernetes-introduction/cncf-and-its-landscapes/cncf-landscape-lg-76deb3155685ef877c983fca1eb2d6bde90598d42e0806f6f3b119f72aee3dde.jpg)
+
+<!--v-->
+
 ### Let's discuss
 
 <!--v-->
@@ -456,9 +490,9 @@ resources:
 - 👍 Access to latest hardware without investment
 - 👎 Fully utilized hardware is more expensive on the cloud
 - 👎 CLOUD HYGIENE !
-  - Watch for unused services / storage
-  - Shutdown machines when not used
-  - Services stack up...
+  - ⚠️ Watch for unused services / storage
+  - ⚠️ Shutdown machines when not used
+  - ⚠️ Services stack up...
 
 <!-- .element: class="fragment" -->
 
@@ -472,6 +506,64 @@ resources:
 - 👎 "Dependency" towards your cloud provider...
 
 <!-- .element: class="fragment" -->
+
+<!--s-->
+
+### Cloud Native Culture example : Object Storage
+
+<!--v-->
+
+#### File Storage vs Object Storage
+
+| Aspect | File Storage | Object Storage |
+|---|---|---|
+| Model | Hierarchical directories and files | Buckets and objects (flat namespace) |
+| Access | Mount as network drive, POSIX (NFS/SMB) | HTTP API (REST) |
+| Use case | Shared storage, legacy apps, home directories | Data lakes, ML datasets, backups |
+| Scalability | Limited to file system capacity | Built with scale in mind (abstraction over the storage location) |
+
+<!--v-->
+
+#### Object Storage Model
+
+- **Bucket**: Container for objects (like a top-level folder)
+- **Object**: File + metadata (stored as key-value)
+- **Key**: Object path (e.g., `data/train/image_001.jpg`)
+
+No real hierarchy, just a flat namespace with "/" in keys
+
+<!--v-->
+
+#### Permissions: POSIX vs Object Storage
+
+| POSIX (files) | Object Storage |
+|---------------|----------------|
+| User/Group/Other | IAM policies (users, groups, service accounts) |
+| rwx bits | Fine-grained: read, write, delete, list, admin |
+| Per-file only | Per-bucket or per-object |
+| Local to machine | Managed centrally (cloud IAM) |
+
+Object storage enables **sharing across teams/projects** without managing OS users
+
+<!--v-->
+
+#### Why Object Storage for Data Science?
+
+- **Cheap**: ~$0.02/GB/month (vs $0.10+ for disk)
+- **Accessible**: HTTP API from anywhere
+- **Scalable**: Petabytes without infrastructure management
+- **Shareable**: Easy to share datasets across teams/machines
+
+<!--v-->
+
+#### Object Storage Providers
+
+| Provider | Service | URI Format |
+|----------|---------|------------|
+| AWS | S3 | `s3://bucket/key` |
+| GCP | GCS | `gs://bucket/key` |
+
+Same concepts, similar APIs, different CLIs
 
 <!--s-->
 
@@ -529,6 +621,8 @@ https://aws.amazon.com/message/12721/
 
 [Mind boggling statistics on Amazon Prime Day](https://aws.amazon.com/blogs/aws/amazon-prime-day-2019-powered-by-aws/)
 
+[Scaling ChatGPT](https://newsletter.pragmaticengineer.com/p/scaling-chatgpt)
+
 <!--s-->
 
 ## Cloud Computing & AI
@@ -547,11 +641,11 @@ This was in 2022,
 
 ### All about that scale
 
-This is 2024,
+This was 2024,
 
 ![alt text](https://substackcdn.com/image/fetch/w_1456,c_limit,f_webp,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F06b6c30c-ad4e-48b8-a506-328b16529a66_2390x570.png)
 
-https://dblalock.substack.com/p/2024-8-4-arxiv-roundup-llama-31-training 
+https://dblalock.substack.com/p/2024-8-4-arxiv-roundup-llama-31-training
 
 <!--v-->
 
@@ -565,7 +659,7 @@ https://dblalock.substack.com/p/2024-8-4-arxiv-roundup-llama-31-training
 
 ![](https://assets-global.website-files.com/61fd4eb76a8d78bc0676b47d/63cf7cb6264c4050ed2ea00e_Screen%20Shot%202023-01-23%20at%2010.37.19%20PM.png) <!-- .element: height="60%" width="60%" -->
 
-[Stable Diffusion Training Times](https://www.mosaicml.com/blog/training-stable-diffusion-from-scratch-costs-160k)
+[Stable Diffusion Training Times](https://www.databricks.com/blog/stable-diffusion-2)
 
 <!--v--> 
 
@@ -617,11 +711,11 @@ Deployment architecture
 
 <!--v-->
 
-### The need for tech
+### The need for tech to orchestrate ML workflows
 
 ![](static/img/anyscale.png)  <!-- .element: height="50%" width="50%" -->
 
-And dask !
+(And dask !)
 
 <!--s-->
 
@@ -722,7 +816,7 @@ but you will "deal with" cloud computing one way or another !
       // options from URL query string
       var queryOptions = Reveal().getQueryHash() || {};
 
-      var options = extend(defaultOptions, {"transition":"fade","transitionSpeed":"default","controls":true,"slideNumber":true,"width":"100%","height":"100%","_":["."],"template":"static/template/reveal.html","listing-template":"static/template/listing.html","listingTemplate":"static/template/listing.html","css":["static/css/evo.css","static/css/reset.css"],"static-dirs":"static","staticDirs":"static","static":"../docs/slides"}, queryOptions);
+      var options = extend(defaultOptions, {"transition":"fade","transitionSpeed":"default","controls":true,"slideNumber":true,"width":"100%","height":"100%","_":["."],"template":"static/template/reveal.html","listing-template":"static/template/listing.html","listingTemplate":"static/template/listing.html","css":["static/css/evo.css","static/css/reset.css"],"static-dirs":"static","staticDirs":"static","static":"../../slides_new"}, queryOptions);
     </script>
 
 
