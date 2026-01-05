@@ -55,7 +55,7 @@ drwxr-xr-x    5 root     root          4096 Mar  2 16:20 lib
 What happened? Behind the scenes, a lot of stuff happened. When you call `run`,
 
 1. The Docker client contacts the Docker daemon
-2. The Docker daemon checks local store if the image (alpine in this case) is available locally, and if not, downloads it from Docker Store. (Since we have issued `docker pull alpine` before, the download step is not necessary)
+2. The Docker daemon checks local store if the image (alpine in this case) is available locally, and if not, downloads it from Docker Hub. (Since we have issued `docker pull alpine` before, the download step is not necessary)
 3. The Docker daemon creates the container and then runs a command in that container.
 4. The Docker daemon streams the output of the command to the Docker client
 
@@ -118,9 +118,16 @@ In the last section, you saw a lot of Docker-specific jargon which might be conf
 * *Containers* - Running instances of Docker images &mdash; containers run the actual applications. A container includes an application and all of its dependencies. It shares the kernel with other containers, and runs as an isolated process in user space on the host OS. You created a container using `docker run` which you did using the alpine image that you downloaded. A list of running containers can be seen using the `docker ps` command.
 * *Docker daemon* - The background service running on the host that manages building, running and distributing Docker containers.
 * *Docker client* - The command line tool that allows the user to interact with the Docker daemon.
-* *Docker Store* - A [registry](https://store.docker.com/) of Docker images, where you can find trusted and enterprise ready containers, plugins, and Docker editions. You'll be using this later in this tutorial.
+* *Docker Hub* - A [registry](https://hub.docker.com/) of Docker images, where you can find trusted and enterprise ready containers, plugins, and Docker editions. You'll be using this later in this tutorial.
 
-## 2.0 Webapps with Docker
+!!! success "What you learned in this section"
+    - **docker pull**: Download images from a registry (Docker Hub)
+    - **docker run**: Create and start a container from an image
+    - **docker ps**: List running containers (`-a` for all, including stopped)
+    - **Interactive mode**: Use `-it` flags to get a shell inside a container
+    - **Key vocabulary**: Images (blueprints) vs Containers (running instances)
+
+## 2. Webapps with Docker
 
 Source: <https://github.com/docker/labs>
 
@@ -130,9 +137,9 @@ Great! So you have now looked at `docker run`, played with a Docker container an
 
 >**Note:** Code for this section is in this repo in the website directory
 
-Let's start by taking baby-steps. First, we'll use Docker to run a static website in a container. The website is based on an existing image. We'll pull a Docker image from Docker Store, run the container, and see how easy it is to set up a web server.
+Let's start by taking baby-steps. First, we'll use Docker to run a static website in a container. The website is based on an existing image. We'll pull a Docker image from Docker Hub, run the container, and see how easy it is to set up a web server.
 
-The image that you are going to use is a single-page website that was already created for this demo and is available on the Docker Store as [`dockersamples/static-site`](https://store.docker.com/community/images/dockersamples/static-site). You can download and run the image directly in one go using `docker run` as follows.
+The image that you are going to use is a single-page website that was already created for this demo and is available on Docker Hub as [`dockersamples/static-site`](https://hub.docker.com/r/dockersamples/static-site). You can download and run the image directly in one go using `docker run` as follows.
 
 ```bash
 docker run -d dockersamples/static-site
@@ -143,7 +150,7 @@ Files:
 * [Dockerfile](https://github.com/docker/labs/blob/master/beginner/static-site/Dockerfile)
 * [hello_docker.html](https://github.com/docker/labs/blob/master/beginner/static-site/Hello_docker.html)
 
->**Note:** The current version of this image doesn't run without the `-d` flag. The `-d` flag enables **detached mode**, which detaches the running container from the terminal/shell and returns your prompt after the container starts. We are debugging the problem with this image but for now, use `-d` even for this first example.
+>**Note:** The `-d` flag enables **detached mode**, which detaches the running container from the terminal/shell and returns your prompt after the container starts.
 
 So, what happens when you run this command?
 
@@ -177,39 +184,30 @@ $ docker rm   a7a0e504ca3e
 Now, let's launch a container in **detached** mode as shown below:
 
 ```bash
-$ docker run --name static-site -e AUTHOR="Your Name" -d -P dockersamples/static-site
+$ docker run --name static-site -e AUTHOR="Your Name" -d -p 8080:80 dockersamples/static-site
 e61d12292d69556eabe2a44c16cbd54486b2527e2ce4f95438e504afb7b02810
 ```
 
 In the above command:
 
 *  `-d` will create a container with the process detached from our terminal
-* `-P` will publish all the exposed container ports to random ports on the Docker host
+* `-p 8080:80` maps port 8080 on your host to port 80 in the container (format: `host:container`)
 * `-e` is how you pass environment variables to the container
 * `--name` allows you to specify a container name
 * `AUTHOR` is the environment variable name and `Your Name` is the value that you can pass
 
-Now you can see the ports by running the `docker port` command.
+You can verify the port mapping by running the `docker port` command:
 
 ```bash
 $ docker port static-site
-443/tcp -> 0.0.0.0:32772
-80/tcp -> 0.0.0.0:32773
+80/tcp -> 0.0.0.0:8080
 ```
 
-If you are on codespace, create [a port forwarding on port 80](https://docs.github.com/en/codespaces/developing-in-codespaces/forwarding-ports-in-your-codespace) to connect to the website
- 
-If you are running [Docker for Mac](https://docs.docker.com/docker-for-mac/), [Docker for Windows](https://docs.docker.com/docker-for-windows/), or Docker on Linux, you can open `http://localhost:[YOUR_PORT_FOR 80/tcp]`. For our example this is `http://localhost:32773`.
+If you are on Codespace, the port 8080 should be automatically detected. You can also manually [forward port 8080](https://docs.github.com/en/codespaces/developing-in-codespaces/forwarding-ports-in-your-codespace) to access the website.
 
-If you are using Docker Machine on Mac or Windows, you can find the hostname on the command line using `docker-machine` as follows (assuming you are using the `default` machine).
+Open `http://localhost:8080` in your browser to see the website.
 
-```bash
-$ docker-machine ip default
-192.168.99.100
-```
-You can now open `http://<YOUR_IPADDRESS>:[YOUR_PORT_FOR 80/tcp]` to see your site live! For our example, this is: `http://192.168.99.100:32773`.
-
-You can also run a second webserver at the same time, specifying a custom host port mapping to the container's webserver.
+You can also run a second webserver at the same time on a different port:
 
 ```bash
 $ docker run --name static-site-2 -e AUTHOR="Your Name" -d -p 8888:80 dockersamples/static-site
@@ -217,7 +215,7 @@ $ docker run --name static-site-2 -e AUTHOR="Your Name" -d -p 8888:80 dockersamp
 
 <img src="https://raw.githubusercontent.com/docker/labs/master/beginner/images/static.png" title="static">
 
-To deploy this on a real server you would just need to install Docker, and run the above `docker` command(as in this case you can see the `AUTHOR` is Docker which we passed as an environment variable).
+To deploy this on a real server you would just need to install Docker, and run the above `docker` command (as in this case you can see the `AUTHOR` is Docker which we passed as an environment variable).
 
 Now that you've seen how to run a webserver inside a Docker container, how do you create your own Docker image? This is the question we'll explore in the next section.
 
@@ -249,17 +247,13 @@ Docker images are the basis of containers. In the previous example, you **pulled
 
 ```bash
 $ docker images
-REPOSITORY             TAG                 IMAGE ID            CREATED             SIZE
-dockersamples/static-site   latest              92a386b6e686        2 hours ago        190.5 MB
-nginx                  latest              af4b3d7d5401        3 hours ago        190.5 MB
-python                 2.7                 1c32174fd534        14 hours ago        676.8 MB
-postgres               9.4                 88d845ac7a88        14 hours ago        263.6 MB
-containous/traefik     latest              27b4e0c6b2fd        4 days ago          20.75 MB
-node                   0.10                42426a5cba5f        6 days ago          633.7 MB
-redis                  latest              4f5f397d4b7c        7 days ago          177.5 MB
-mongo                  latest              467eb21035a8        7 days ago          309.7 MB
-alpine                 3.3                 70c557e50ed6        8 days ago          4.794 MB
-java                   7                   21f6ce84e43c        8 days ago          587.7 MB
+REPOSITORY                  TAG                 IMAGE ID            CREATED             SIZE
+dockersamples/static-site   latest              92a386b6e686        2 hours ago         190.5 MB
+nginx                       latest              af4b3d7d5401        3 hours ago         190.5 MB
+python                      3.11                1c32174fd534        14 hours ago        1.01 GB
+postgres                    16                  88d845ac7a88        14 hours ago        432 MB
+redis                       7-alpine            4f5f397d4b7c        7 days ago          41 MB
+alpine                      3.18                70c557e50ed6        8 days ago          7.8 MB
 ```
 
 Above is a list of images that I've pulled from the registry and those I've created myself (we'll shortly see how). You will have a different list of images on your machine. The `TAG` refers to a particular snapshot of the image and the `ID` is the corresponding unique identifier for that image.
@@ -269,7 +263,7 @@ For simplicity, you can think of an image akin to a git repository - images can 
 For example you could pull a specific version of `ubuntu` image as follows:
 
 ```bash
-$ docker pull ubuntu:12.04
+$ docker pull ubuntu:22.04
 ```
 
 If you do not specify the version number of the image then, as mentioned, the Docker client will default to a version named `latest`.
@@ -280,7 +274,7 @@ So for example, the `docker pull` command given below will pull an image named `
 $ docker pull ubuntu
 ```
 
-To get a new Docker image you can either get it from a registry (such as the Docker Store) or create your own. There are hundreds of thousands of images available on [Docker Store](https://store.docker.com). You can also search for images directly from the command line using `docker search`.
+To get a new Docker image you can either get it from a registry (such as Docker Hub) or create your own. There are hundreds of thousands of images available on [Docker Hub](https://hub.docker.com). You can also search for images directly from the command line using `docker search`.
 
 An important distinction with regard to images is between _base images_ and _child images_.
 
@@ -292,7 +286,7 @@ Another key concept is the idea of _official images_ and _user images_. (Both of
 
 - **Official images** are Docker sanctioned images. Docker, Inc. sponsors a dedicated team that is responsible for reviewing and publishing all Official Repositories content. This team works in collaboration with upstream software maintainers, security experts, and the broader Docker community. These are not prefixed by an organization or user name. In the list of images above, the `python`, `node`, `alpine` and `nginx` images are official (base) images. To find out more about them, check out the [Official Images Documentation](https://docs.docker.com/docker-hub/official_repos/).
 
-- **User images** are images created and shared by users like you. They build on base images and add additional functionality. Typically these are formatted as `user/image-name`. The `user` value in the image name is your Docker Store user or organization name.
+- **User images** are images created and shared by users like you. They build on base images and add additional functionality. Typically these are formatted as `user/image-name`. The `user` value in the image name is your Docker Hub user or organization name.
 
 ### 2.3 Create your first image
 
@@ -396,7 +390,7 @@ Create a directory called `templates` and create an **index.html** file in that 
 
 ### 2.3.2 Write a Dockerfile
 
-We want to create a Docker image with this web app. As mentioned above, all user images are based on a _base image_. Since our application is written in Python, we will build our own Python image based on [Alpine](https://store.docker.com/images/alpine). We'll do that using a **Dockerfile**.
+We want to create a Docker image with this web app. As mentioned above, all user images are based on a _base image_. Since our application is written in Python, we will build our own Python image based on [Alpine](https://hub.docker.com/_/alpine). We'll do that using a **Dockerfile**.
 
 A [Dockerfile](https://docs.docker.com/engine/reference/builder/) is a text file that contains a list of commands that the Docker daemon calls while creating an image. The Dockerfile contains all the information that Docker needs to know to run the app &#8212; a base Docker image to run from, location of your project code, any dependencies it has, and what commands to run at start-up. It is a simple way to automate the image creation process. The best part is that the [commands](https://docs.docker.com/engine/reference/builder/) you write in a Dockerfile are *almost* identical to their equivalent Linux commands. This means you don't really have to learn new syntax to create your own Dockerfiles.
 
@@ -411,7 +405,7 @@ A [Dockerfile](https://docs.docker.com/engine/reference/builder/) is a text file
 
   Note : If you use the latest version of alpine which is 3.20, follow this [tutorial](https://jairoandres.com/python-dependencies-break-your-system-if-you-want/) to handle an error you might be getting
 
-2. The next step usually is to write the commands of copying the files and installing the dependencies. But first we will install the Python pip package to the alpine linux distribution. This will not just install the pip package but any other dependencies too, which includes the python interpreter. Add the following [RUN](https://docs.docker.com/engine/reference/builder/#run) command next. Additionnally, we will do something to handle the newest python rules []
+2. The next step usually is to write the commands of copying the files and installing the dependencies. But first we will install the Python pip package to the alpine linux distribution. This will not just install the pip package but any other dependencies too, which includes the python interpreter. Add the following [RUN](https://docs.docker.com/engine/reference/builder/#run) command next.
 
   ```
   RUN apk add --update py-pip
@@ -483,71 +477,22 @@ The `docker build` command is quite simple - it takes an optional tag name with 
 
 ```
 $ docker build -t myfirstapp:1.0 .
-Sending build context to Docker daemon 9.728 kB
-Step 1 : FROM alpine:18
- ---> 0d81fc72e790
-Step 2 : RUN apk add --update py-pip
- ---> Running in 8abd4091b5f5
-fetch http://dl-4.alpinelinux.org/alpine/v3.3/main/x86_64/APKINDEX.tar.gz
-fetch http://dl-4.alpinelinux.org/alpine/v3.3/community/x86_64/APKINDEX.tar.gz
-(1/12) Installing libbz2 (1.0.6-r4)
-(2/12) Installing expat (2.1.0-r2)
-(3/12) Installing libffi (3.2.1-r2)
-(4/12) Installing gdbm (1.11-r1)
-(5/12) Installing ncurses-terminfo-base (6.0-r6)
-(6/12) Installing ncurses-terminfo (6.0-r6)
-(7/12) Installing ncurses-libs (6.0-r6)
-(8/12) Installing readline (6.3.008-r4)
-(9/12) Installing sqlite-libs (3.9.2-r0)
-(10/12) Installing python (2.7.11-r3)
-(11/12) Installing py-setuptools (18.8-r0)
-(12/12) Installing py-pip (7.1.2-r0)
-Executing busybox-1.24.1-r7.trigger
-OK: 59 MiB in 23 packages
- ---> 976a232ac4ad
-Removing intermediate container 8abd4091b5f5
-Step 3 : COPY requirements.txt /usr/src/app/
- ---> 65b4be05340c
-Removing intermediate container 29ef53b58e0f
-Step 4 : RUN pip install --no-cache-dir -r /usr/src/app/requirements.txt
- ---> Running in a1f26ded28e7
-Collecting Flask==0.10.1 (from -r /usr/src/app/requirements.txt (line 1))
-  Downloading Flask-0.10.1.tar.gz (544kB)
-Collecting Werkzeug>=0.7 (from Flask==0.10.1->-r /usr/src/app/requirements.txt (line 1))
-  Downloading Werkzeug-0.11.4-py2.py3-none-any.whl (305kB)
-Collecting Jinja2>=2.4 (from Flask==0.10.1->-r /usr/src/app/requirements.txt (line 1))
-  Downloading Jinja2-2.8-py2.py3-none-any.whl (263kB)
-Collecting itsdangerous>=0.21 (from Flask==0.10.1->-r /usr/src/app/requirements.txt (line 1))
-  Downloading itsdangerous-0.24.tar.gz (46kB)
-Collecting MarkupSafe (from Jinja2>=2.4->Flask==0.10.1->-r /usr/src/app/requirements.txt (line 1))
-  Downloading MarkupSafe-0.23.tar.gz
-Installing collected packages: Werkzeug, MarkupSafe, Jinja2, itsdangerous, Flask
-  Running setup.py install for MarkupSafe
-  Running setup.py install for itsdangerous
-  Running setup.py install for Flask
-Successfully installed Flask-0.10.1 Jinja2-2.8 MarkupSafe-0.23 Werkzeug-0.11.4 itsdangerous-0.24
-You are using pip version 7.1.2, however version 8.1.1 is available.
-You should consider upgrading via the 'pip install --upgrade pip' command.
- ---> 8de73b0730c2
-Removing intermediate container a1f26ded28e7
-Step 5 : COPY app.py /usr/src/app/
- ---> 6a3436fca83e
-Removing intermediate container d51b81a8b698
-Step 6 : COPY templates/index.html /usr/src/app/templates/
- ---> 8098386bee99
-Removing intermediate container b783d7646f83
-Step 7 : EXPOSE 5000
- ---> Running in 31401b7dea40
- ---> 5e9988d87da7
-Removing intermediate container 31401b7dea40
-Step 8 : CMD python /usr/src/app/app.py
- ---> Running in 78e324d26576
- ---> 2f7357a0805d
-Removing intermediate container 78e324d26576
-Successfully built 2f7357a0805d
+[+] Building 45.2s (10/10) FINISHED
+ => [internal] load build definition from Dockerfile                       0.0s
+ => [internal] load .dockerignore                                          0.0s
+ => [internal] load metadata for docker.io/library/alpine:3.18             1.2s
+ => [1/5] FROM docker.io/library/alpine:3.18                               2.1s
+ => [2/5] RUN apk add --update py-pip                                     15.3s
+ => [3/5] COPY requirements.txt /usr/src/app/                              0.0s
+ => [4/5] RUN pip install --no-cache-dir -r /usr/src/app/requirements.txt 20.1s
+ => [5/5] COPY app.py /usr/src/app/                                        0.0s
+ => [6/5] COPY templates/index.html /usr/src/app/templates/                0.0s
+ => exporting to image                                                     1.2s
+ => => writing image sha256:2f7357a0805d...                                0.0s
+ => => naming to docker.io/library/myfirstapp:1.0                          0.0s
 ```
 
-If you don't have the `alpine:3.18` image, the client will first pull the image and then create your image. Therefore, your output on running the command will look different from mine. If everything went well, your image should be ready! Run `docker images` and see if your image (`<YOUR_USERNAME>/myfirstapp`) shows.
+If you don't have the `alpine:3.18` image, the client will first pull the image and then create your image. Therefore, your output on running the command will look different from mine. If everything went well, your image should be ready! Run `docker images` and see if your image (`myfirstapp:1.0`) shows.
 
 ### 2.3.4 Run your image
 
@@ -558,7 +503,7 @@ $ docker run -p 8888:5000 --name myfirstapp myfirstapp:1.0
  * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
 ```
 
-Head over to `http://localhost:8888` and your app should be live. **Note** If you are using Docker Machine, you may need to open up another terminal and determine the container ip address using `docker-machine ip default`.
+Head over to `http://localhost:8888` and your app should be live. If you're using Codespace, make sure port 8888 is forwarded.
 
 ![catgif](https://raw.githubusercontent.com/docker/labs/master/beginner/images/catgif.png)
 
@@ -568,7 +513,7 @@ Hit the Refresh button in the web browser to see a few more cat images.
 
 Here's a quick summary of the few basic commands we used in our Dockerfile.
 
-* `FROM` starts the Dockerfile. It is a requirement that the Dockerfile must start with the `FROM` command. Images are created in layers, which means you can use another image as the base image for your own. The `FROM` command defines your base layer. As arguments, it takes the name of the image. Optionally, you can add the Docker Cloud username of the maintainer and image version, in the format `username/imagename:version`.
+* `FROM` starts the Dockerfile. It is a requirement that the Dockerfile must start with the `FROM` command. Images are created in layers, which means you can use another image as the base image for your own. The `FROM` command defines your base layer. As arguments, it takes the name of the image. Optionally, you can add the Docker Hub username and image version, in the format `username/imagename:version`.
 
 * `RUN` is used to build up the Image you're creating. For each `RUN` command, Docker will run the command then create a new layer of the image. This way you can roll back your image to previous states easily. The syntax for a `RUN` instruction is to place the full text of the shell command after the `RUN` (e.g., `RUN mkdir /user/local/foo`). This will automatically run in a `/bin/sh` shell. You can define a different shell like this: `RUN /bin/bash -c 'mkdir /user/local/foo'`
 
@@ -588,18 +533,111 @@ Here's a quick summary of the few basic commands we used in our Dockerfile.
 >**Note:** The `EXPOSE` command does not actually make any ports accessible to the host! Instead, this requires 
 publishing ports by means of the `-p` flag when using `$ docker run`.  
 
-* `PUSH` pushes your image to Docker Cloud, or alternately to a [private registry](https://docs.docker.com/registry/)
+* `WORKDIR` sets the working directory for any `RUN`, `CMD`, `ENTRYPOINT`, `COPY` and `ADD` instructions that follow it. It's good practice to set this explicitly rather than relying on the default (`/`).
+
+>**Note:** To push your image to a registry, use the `docker push` command (not a Dockerfile instruction). Example: `docker push username/imagename:tag`
 
 >**Note:** If you want to learn more about Dockerfiles, check out [Best practices for writing Dockerfiles](https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/).
+
+### 2.3.6 Docker build context and .dockerignore
+
+When you run `docker build`, Docker sends all files in the current directory (the **build context**) to the Docker daemon. This can slow down builds and bloat your image if unnecessary files are included.
+
+#### The build context
+
+The build context is everything in the directory you specify when running `docker build`. For example:
+
+```bash
+docker build -t myapp:1.0 .
+```
+
+The `.` means "use the current directory as the build context". Docker will send all files in this directory to the daemon, which can be slow if you have large files (datasets, model weights, etc.).
+
+#### Using .dockerignore
+
+Create a `.dockerignore` file to exclude files from the build context. This works like `.gitignore`:
+
+```
+# .dockerignore example
+.git
+__pycache__
+*.pyc
+.env
+data/
+models/
+*.tar.gz
+node_modules/
+.vscode/
+```
+
+!!! tip
+    Always create a `.dockerignore` file in your project. It speeds up builds and prevents accidentally including sensitive files (like `.env` with secrets) in your image.
+
+### 2.3.7 Debugging containers
+
+When things go wrong, these commands will help you troubleshoot:
+
+#### View container logs
+
+```bash
+# See logs from a running or stopped container
+docker logs <container-name-or-id>
+
+# Follow logs in real-time (like tail -f)
+docker logs -f <container-name-or-id>
+
+# Show only the last 100 lines
+docker logs --tail 100 <container-name-or-id>
+```
+
+#### Get a shell inside a running container
+
+```bash
+# Open an interactive shell in a running container
+docker exec -it <container-name-or-id> /bin/sh
+
+# Or use bash if available
+docker exec -it <container-name-or-id> /bin/bash
+```
+
+#### Inspect container details
+
+```bash
+# See detailed container configuration (ports, volumes, env vars, etc.)
+docker inspect <container-name-or-id>
+
+# See resource usage (CPU, memory)
+docker stats <container-name-or-id>
+```
+
+#### Debug a failed build
+
+If your build fails, you can run a container from the last successful layer:
+
+```bash
+# Find the last successful layer ID in the build output, then:
+docker run -it <layer-id> /bin/sh
+```
+
+!!! note
+    These debugging skills are essential when deploying ML models. Container logs are often the first place to check when a model serving endpoint fails.
+
+!!! success "What you learned in this section"
+    - **Running web apps**: Use `-d` for detached mode, `-p host:container` for port mapping
+    - **Building images**: Write a `Dockerfile`, then `docker build -t name:tag .`
+    - **Dockerfile instructions**: `FROM`, `RUN`, `COPY`, `EXPOSE`, `CMD` and their purposes
+    - **Build context & .dockerignore**: Control what gets sent to the Docker daemon
+    - **Debugging**: `docker logs`, `docker exec -it`, `docker inspect` for troubleshooting
 
 ## 3. Running CLI apps packaged in docker while mounting volumes
 
 Beyond serving web applications, Docker also enables the deployment of packaged applications, such as command-line interfaces and training scripts. This allows for seamless delivery of self-contained apps with bespoke installations to end-users. A particularly valuable use case is packaging machine learning environments for distributed training, facilitating efficient collaboration and scalability
 
-To do so, we have to learn about : 
+To do so, we have to learn about:
+
 - Executing command line applications packaged inside docker images
 - Passing both text and files inputs, including files not in the docker image
-- Getting accesss to file outputs such as models
+- Getting access to file outputs such as models
 
 For that we will do several things : 
 - Write a CLI application using [typer](https://typer.tiangolo.com/), a very useful tool for the rest of your career
@@ -673,9 +711,9 @@ if __name__ == "__main__":
 
 We will now package it in a docker file
 
-* Modify the dockerfile : 
-  * Replace `CMD ["python3", "/usr/src/app/app.py"]`
-  * By `ENTRYPOINT ["python3", "/usr/src/app/app.py"]`
+* Modify the Dockerfile:
+  * Replace `CMD ["python", "/usr/src/app/app.py"]`
+  * With `ENTRYPOINT ["python", "/usr/src/app/app.py"]`
 
 * [Differences between CMD and ENTRYPOINT](https://spacelift.io/blog/docker-entrypoint-vs-cmd)
 
@@ -683,7 +721,7 @@ We will now package it in a docker file
 
 ### 3.3 Mounting volumes
 
-* Now to run the CLI you just have to pass the arguments when running the docker `docker run --rm {your image} {your args}`. Try it with `docker run {...} hello {your name}`
+* Now to run the CLI you just have to pass the arguments when running the docker `docker run --rm {your image} {your args}`. Try it with `docker run --rm {your image} say-hello {your name}`
 
 !!! warning
     once you have built your container and it works, don't rebuild it again ! We will test the volume mounting options now
@@ -707,9 +745,15 @@ Note that since you mounted volumes, you must pass the **local path in the docke
 !!! success
     To be successful here you have to be able to pass a config file that is in your codespace and get the results in your codespace, all while not rebuilding the image as long as the first `hello` passes
 
+!!! success "What you learned in this section"
+    - **ENTRYPOINT vs CMD**: `ENTRYPOINT` for CLI apps, `CMD` for default arguments
+    - **Volume mounting**: `-v host_path:container_path` to share files with containers
+    - **ML training pattern**: Mount config/data in, mount results out, keep image unchanged
+    - **Packaging CLI tools**: Distribute complete environments as Docker images
+
 ## 4. Containers Registry
 
-Remember Container Registries ? Here as [some explainers](https://blogs.vmware.com/cloudnative/2017/06/21/what-is-a-container-registry/)
+Remember Container Registries? Here are [some explainers](https://blogs.vmware.com/cloudnative/2017/06/21/what-is-a-container-registry/)
 
 The main container registry is dockerhub, [https://hub.docker.com/](https://hub.docker.com/)
 
@@ -740,6 +784,13 @@ We will follow [this tutorial](https://cloud.google.com/artifact-registry/docs/d
     to get your artifact repository id look at [this page](https://console.cloud.google.com/artifacts/docker/), you can get your project id this way as well
 
 * Go to your artifact registry [https://console.cloud.google.com/artifacts](https://console.cloud.google.com/artifacts), you should see your docker image :)
+
+!!! success "What you learned in this section"
+    - **Container registries**: Central storage for Docker images (like GitHub for code)
+    - **Docker Hub vs private registries**: Public images vs organization-private images
+    - **GCP Artifact Registry**: Google's managed container registry service
+    - **Tag and push workflow**: `docker tag` to rename, `docker push` to upload
+    - **Image naming convention**: `registry/project/image:tag` format
 
 ## 5. Bonus. Data Science Standardized Environment and mounting volumes
 
@@ -777,9 +828,9 @@ docker pull jupyter/scipy-notebook:lab-3.5.3
 
 ### 5.4 Mounting volumes and ports
 
-Now let's run the image. This container has a jupyter notebook accessible from port 8080 so we will need to map the host port 8888 (the one accessible from the ssh tunnel) to the docker port 8080, we will use [port forwarding](https://docs.docker.com/config/containers/container-networking/)
+Now let's run the image. This container has a Jupyter notebook accessible from port 8888, so we will need to map the host port 8888 to the container port 8888 using [port forwarding](https://docs.docker.com/config/containers/container-networking/).
 
-We will also need to make available the notebooks on the VM to the container... we will [mount volumes](https://docs.docker.com/storage/volumes/). Your data is located in `/home/${USER}/MLClass` and we want to miunt it in `/tmp/workdir`
+We will also need to make available the notebooks on the VM to the container... we will [mount volumes](https://docs.docker.com/storage/volumes/). Your data is located in `/home/${USER}/MLClass` and we want to mount it in `/home/jovyan/work/MLClass`
 
 ```bash
 docker run --rm -it \
@@ -804,6 +855,11 @@ So to connect to the jupyter lab we mapped the ports local 8888 to vm 8888 and v
 
 We also exposed the local disk to the container
 
+!!! success "What you learned in this section"
+    - **Pre-built data science images**: Jupyter stacks provide ready-to-use ML environments
+    - **Combining port forwarding and volumes**: Access Jupyter while using local data
+    - **Double port mapping**: Codespace → VM → Container chain for remote access
+
 ## 6. Bonus - Docker Compose
 
 Docker Compose is used to manage applications and increase efficiency in container development. Configurations are defined in a single YAML file, making applications easy to build and scale. Docker Compose is often used to set up a local environment
@@ -824,19 +880,28 @@ You can find a more extensive example here :
 
 <https://github.com/docker/labs/blob/master/beginner/chapters/votingapp.md>
 
+!!! success "What you learned in this section"
+    - **Docker Compose**: Define multi-container apps in a single YAML file
+    - **Service orchestration**: Link containers (e.g., web app + database) together
+    - **Local development**: `docker compose up` to start your entire stack
+
 ## 7. Bonus - Using Google Cloud Tools for Docker
 
 Using codespace, you should be able to do the Hello World Dockerfile exercise except that instead of using docker build you use Google Cloud Build
 
 Tutorial: <https://cloud.google.com/cloud-build/docs/quickstart-docker>
 
-Example command :`gcloud builds submit --tag eu.gcr.io/$PROJECT_ID/{image}:{tag} .`
+Example command: `gcloud builds submit --tag europe-docker.pkg.dev/$PROJECT_ID/$REPO_ID/{image}:{tag} .`
 
 !!! help
     to get your project id: `PROJECT_ID=$(gcloud config get-value project 2> /dev/null)`
 
 !!! example
     Try to build the hello world app
+
+!!! success "What you learned in this section"
+    - **Cloud Build**: Build Docker images in the cloud without local Docker
+    - **Remote builds**: Useful when local resources are limited or for CI/CD pipelines
 
 ## 8. Bonus - Going further
 

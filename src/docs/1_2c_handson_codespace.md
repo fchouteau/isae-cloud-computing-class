@@ -3,76 +3,139 @@
 ## 1. Abstract
 
 !!! abstract
-    In this hands on you will start to manipulate a Github Codespace remote development environment to get familiar about manipulating code and data not stored in your computer
-    We will also discover streamlit which is a python library used to build frontend, and discover how to preview some things from the github codespace to your machine
+    In this hands-on, you will use a GitHub Codespace remote development environment to get familiar with working on code and data not stored on your computer.
+    We will also discover Streamlit, a Python library for building web frontends, and learn how to preview remote applications from your browser.
 
 !!! warning
-    Some things may only work on **eduroam** or in 4G...
-    Some things may only works on Google Chrome
+    Some things may only work on **eduroam** or with 4G...
+    Some things may only work on Google Chrome
 
 !!! warning
-    Don't forget to shutdown everything when you're done !
+    Don't forget to shut down everything when you're done!
 
 !!! note
     When the TP says to replace "{something}" with a name, don't include the brackets so write “yourname"
 
-## 1. My first "Virtual Machine", Github Codespaces
+## 1. My first "Virtual Machine": GitHub Codespaces
 
 First, you will need a [GitHub](https://github.com/) account. You should already have one, otherwise create one.
 
-### Intro to Github Codespaces
+### Intro to GitHub Codespaces
 
-* [Github Codespaces](https://github.com/features/codespaces) is a "managed VM" made available to develop without needing to configure locally your environment.
-* Compared to configured a VM by yourself, this one comes loaded with developer tools, and thus is faster to use,
+* [GitHub Codespaces](https://github.com/features/codespaces) is a managed VM that lets you develop without configuring your local environment.
+* Compared to configuring a VM yourself, Codespaces comes pre-loaded with developer tools, making it faster to get started.
 * You have a free tier of 60 CPU hours / months and some disk space
-* You pay for the CPI when the VM is ON and for the disk when the codespace is create
+* You pay for the CPU when the VM is ON and for the disk when the codespace is created
 
-Have a look at the overview : [https://docs.github.com/en/codespaces/overview](https://docs.github.com/en/codespaces/overview) 
+Have a look at the overview: [https://docs.github.com/en/codespaces/overview](https://docs.github.com/en/codespaces/overview)
 
 !!! question
-    * Can you describe it with your own words ?
-    * How would ChatGPT (or any LLM) describe it ?
+    Can you describe it in your own words?
+    How would ChatGPT (or any LLM) describe it?
 
 !!! note
-    Google Cloud has a similar service with Google Cloud Shell but since Codespaces is way more powerful, we will be using that
+    Google Cloud has a similar service called Google Cloud Shell, but Codespaces is more powerful, so we will use that instead
 
-### Create your codespace and connect to it
+??? info "How Codespaces work under the hood"
+    **What is a Codespace technically?**
+
+    A Codespace is a **Linux VM** running in Microsoft Azure (GitHub's parent company). When you create a Codespace:
+
+    1. Azure provisions a VM with your chosen resources (CPU cores, RAM)
+    2. A **Docker container** is started on that VM with your development environment
+    3. The container is configured via a `.devcontainer/devcontainer.json` file in your repo
+
+    **How does the browser connection work?**
+
+    When you open a Codespace in your browser:
+
+    - Your browser connects to a **VS Code Server** running in the container
+    - The VS Code UI is rendered locally in your browser (it's a web app)
+    - Commands and file operations are sent to the remote server via WebSocket
+
+    **How does port forwarding work?**
+
+    When you run a server (e.g., Jupyter on port 8888):
+
+    1. The server binds to a port inside the container
+    2. GitHub's infrastructure creates a **reverse proxy** with a unique URL
+    3. Your browser connects to `https://{codespace-name}-8888.app.github.dev`
+    4. The proxy forwards traffic through secure tunnels to your container
+
+    This is why you can access localhost services without any firewall configuration! 
+
+### Web UI : Create your codespace and connect to it using the web interface
 
 Go to [https://github.com/fchouteau/isae-cloud-computing-codespace](https://github.com/fchouteau/isae-cloud-computing-codespace)
 
-![](slides/static/img/codespacefchouteau.png)
+![codespace](slides/static/img/codespacefchouteau.png)
 
-* Click on the top left corner for a new codespace
-* It should launch a browser with a vscode
-* Launch a terminal using the top right menu
+* Click on the green "Code" button, then select "Create codespace on main"
+* It should open a browser tab with VS Code
+* Launch a terminal using the top menu (Terminal > New Terminal)
 
-**If that does not work,** go to [https://github.com/github/codespaces-blank](https://github.com/github/codespaces-blank) and create a codespace from there
+You should see a VS Code instance
 
-![](slides/static/img/codespacesblank.png)
-
-You should arrive to a VScode instance
-
-![](slides/static/img/codespacevscode.png)
+![codespace](slides/static/img/codespacevscode.png)
 
 !!! question
-    * Where is it running ?
+    Where is this running?
 
-If you go to the core page of [https://github.com/codespaces](https://github.com/codespaces) you should see your codespace running
+If you go to [https://github.com/codespaces](https://github.com/codespaces), you should see your codespace running
 
 ![img.png](slides/static/img/codespace.png)
 
-### Explore github codespaces
 
-[Github Codespace Getting Started](https://docs.github.com/en/codespaces/getting-started)
+### Alternative: Connect from local VSCode
 
-Identify the following features in the interface
+You can also connect to your Codespace from your local VSCode installation instead of using the browser.
 
-    Code editor (e.g., VS Code)
-    Terminal
-    File explorer
-    Debugging tools (e.g., breakpoints, console output)
 
-You can then carry these commands in order to get a feel of the "computer" behind
+**Prerequisites:**
+
+- VSCode installed on your machine
+- [GitHub Codespaces extension](https://marketplace.visualstudio.com/items?itemName=GitHub.codespaces) installed
+
+**Steps: (via Web UI)**
+
+![img.png](slides/static/img/codespace_local.png)
+
+- Go to https://github.com/codespaces and click on "Open in VS Code Desktop"
+
+**Steps: (via VSCode)**
+
+1. Open VSCode locally
+2. Open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`)
+3. Type "Codespaces: Create New Codespace"
+4. Paste the following: `fchouteau/isae-cloud-computing-codespace`
+
+To reconnect to an existing codespace:
+1. Open VSCode locally
+2. Open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`)
+3. Type "Codespaces: Connect to Codespace"
+4. Select your running Codespace from the list
+
+**Benefits of local VSCode:**
+
+- Use your familiar keybindings and settings
+- Better performance (native app vs browser)
+- Access to all your local extensions
+- Easier file transfers via drag-and-drop
+
+**Note:** The Codespace still runs remotely - only the UI is local.
+
+### Explore GitHub Codespaces
+
+[GitHub Codespaces Getting Started](https://docs.github.com/en/codespaces/getting-started)
+
+Identify the following features in the interface:
+
+- Code editor (VS Code)
+- Terminal
+- File explorer
+- Debugging tools (breakpoints, console output)
+
+Run these commands to get a feel for the "computer" behind the interface:
 
 * Check available disk space
 
@@ -89,29 +152,76 @@ You can then carry these commands in order to get a feel of the "computer" behin
 ??? note "Bash command to run"
     `cat /proc/cpuinfo`
 
-* This is the hardware model... how many cores do you have available ? Which amount of RAM ?
+* This is the hardware model... How many cores do you have available? How much RAM?
 
 ??? note "Help"
     `htop` will give you your current usage and available cores, or you can do `nproc`
+
+* Check the python installation
+
+??? note "Bash command to run"
+    `python --version`
+    `pip list`
 
 * Try and upload a file from your computer to the codespace by right clicking on the file explorer on the left
 
 * Create a new file and write a simple python "Hello World", then execute it from the terminal
 
+### Understanding Ports and Port Forwarding
+
+??? info "What is a port?"
+    A **port** is a 16-bit number (0-65535) that identifies a specific process or service on a machine. Think of it like apartment numbers in a building:
+
+    - The IP address is the building address
+    - The port is the apartment number
+
+    **Common ports:**
+
+    | Port | Service |
+    |------|---------|
+    | 22 | SSH |
+    | 80 | HTTP (web) |
+    | 443 | HTTPS (secure web) |
+    | 8888 | Jupyter (default) |
+    | 8501 | Streamlit (default) |
+
+    When you run `jupyter lab`, it starts a web server listening on port 8888. Anyone who can reach that port can access Jupyter.
+
+??? info "What is port forwarding?"
+    **Port forwarding** (or tunneling) connects a port on one machine to a port on another through a secure channel.
+
+    ```
+    Your laptop:8888  <--tunnel-->  Remote VM:8888
+    ```
+
+    When you access `localhost:8888` on your laptop, the traffic is forwarded through the tunnel to port 8888 on the remote machine.
+
+    **Why is this useful?**
+
+    - The remote machine might not be directly accessible from the internet
+    - You want to access services as if they were running locally
+    - Security: the tunnel encrypts traffic
+
 ### A demo of codespace port forwarding / web preview
 
-* In your codespace, run `jupyter lab` to launch the jupyter lab installed in it
-* Check the "port" preview : It should have a new entry with the 8888 port. If not, create it manually
-* Click on open in browser
-* Copy the token from your terminal to the web browser
-* You are new in a jupyterlab hosted on your github codespace VM !
+* In your codespace, run `jupyter lab` to launch Jupyter Lab
+* Check the "Ports" tab in VS Code: it should show a new entry for port 8888. If not, add it manually
+* Click "Open in Browser"
+* Copy the token from your terminal to the browser
+* You are now in a Jupyter Lab instance hosted on your GitHub Codespace VM!
 
 !!! question
-    Magic !? What do you think is happening ? Try to describe it with your own words
+    How do you think this works? Try to describe it in your own words.
 
-* Cancel (CTRL+C) the jupyter process
+* Cancel the Jupyter process with `CTRL+C`
 
 To learn more about port forwarding in codespaces, refer to the [documentation](https://docs.github.com/en/codespaces/developing-in-codespaces/forwarding-ports-in-your-codespace)
+
+!!! success "What you learned in this section"
+    - **Remote development environments**: Codespaces provide a cloud-hosted VM with pre-configured tools
+    - **VS Code in the browser**: The same IDE experience, but running remotely
+    - **Port forwarding**: Access services running on remote machines as if they were local
+    - **System exploration**: Commands like `df -h`, `htop`, `cat /proc/cpuinfo` to understand your environment
 
 ## 2. Running a ML training script in the Codespace
 
@@ -182,6 +292,11 @@ gh codespace cp remote:/workspaces/isae-cloud-computing-codespace/training/model
 !!! question
     How comfortable do you feel with this remote machine? Is it easy to get data in or out? Code in or out?
 
+!!! success "What you learned in this section"
+    - **Remote computation**: Running code on a cloud machine instead of your laptop
+    - **File transfer**: Moving files between local and remote environments
+    - **The cloud workflow**: Edit locally (or remotely), run remotely, retrieve results
+
 ## 3. Building a webapp (Preview & Bonus)
 
 !!! note "Preview for Day 2"
@@ -198,22 +313,22 @@ We will introduce **Streamlit**, a Python library to build quick web apps for da
 
 In this section, you will build your first interactive webapp in Python and preview it using Codespace's port forwarding feature.
 
-First, look at this video: 
+First, watch this video:
 
 <video width="320" height="240" controls>
   <source src="https://s3-us-west-2.amazonaws.com/assets.streamlit.io/videos/hero-video.mp4" type="video/mp4">
 Your browser does not support the video tag.
 </video>
 
-Then, take a look at an [introduction to streamlit](https://www.askpython.com/python-modules/introduction-to-streamlit) and [the streamlit application gallery](https://streamlit.io/gallery)
+Then, take a look at an [introduction to Streamlit](https://www.askpython.com/python-modules/introduction-to-streamlit) and [the Streamlit application gallery](https://streamlit.io/gallery)
 
 !!! question
-    Can you describe what exactly is streamlit ?
-    Could you find any way it could be useful to you ?
+    Can you describe what Streamlit is?
+    Can you think of ways it could be useful to you?
 
-### 3.1. Your first streamlit application
+### 3.1. Your first Streamlit application
 
-Take a look at the code below, 
+Take a look at the code below: 
 
 ```python
 import streamlit as st
@@ -263,7 +378,7 @@ image_comparison(
 ```
 
 !!! question
-    Can you describe, by reading the documentation, what does the code do ?
+    By reading the code and documentation, can you describe what this code does?
 
 ### 3.2. Running Streamlit in the Codespace
 

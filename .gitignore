@@ -142,5 +142,6 @@ dmypy.json
 src/site
 src/docs/slides
 
-# No submodule
-isae-cloud-computing-codespace
+# Teacher resources (tmp)
+src/teacher/scripts
+src/teacher/isae-cloud-computing-codespace

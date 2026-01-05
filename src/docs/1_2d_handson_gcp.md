@@ -3,8 +3,10 @@
 ## 0. Abstract
 
 !!! abstract
-    In this hands on you will configure your GCP account, the google cloud SDK and access the cloud console using Google Cloud Shell,
-    You will also discover a very useful tool, a managed jupyter notebook service from google named Google Colab which may be very important for your future developments this year
+    In this hands-on, you will configure your GCP account and the Google Cloud SDK.
+    You will create and manage Compute Engine VMs, learn to transfer files, and
+    interact with Cloud Storage. Finally, you'll run a complete ML workflow using
+    a Deep Learning VM.
 
 !!! warning
     Some things may only work on **eduroam** or in 4G...
@@ -18,6 +20,17 @@
 !!! tip
     If you are lost on where you are, normally the terminal has the hostname indicated, otherwise run the command `hostname`
 
+!!! danger "Cost Warning"
+    GCP resources cost money. Even with free credits:
+
+    - **Always delete VMs** when done (Section 8)
+    - **Delete buckets** you create
+    - **Stop your Codespace** when finished
+
+    Forgot to clean up? Your credits will drain quickly.
+
+    If you reach the end of the class without having finished everything, go to the cleaning section at the end and carry it.
+
 ## 1. Create your GCP Account
 
 !!! note
@@ -30,13 +43,13 @@ Here you will each create a Google Cloud Platform account and project using the 
 * Create an account within [Google cloud Platform](https://console.cloud.google.com) using your ISAE e-mail
 * Use the code given by Dennis to redeem your free credits
 * You should have a [free tier](https://cloud.google.com/free) available to you as well as coupons
-* From [the interface](https://console.cloud.google.com) you should [create a project](https://cloud.google.com/resource-manager/docs/creating-managing-projects) with a name of your choice (it is recommended to put for example sdd2425-yourname so that it is clear)
+* From [the interface](https://console.cloud.google.com) you should [create a project](https://cloud.google.com/resource-manager/docs/creating-managing-projects) with a name of your choice (it is recommended to put for example sdd2526-yourname so that it is clear)
 
 ## 2. (re)connect to GitHub Codespaces
 
 ### If you still have your codespace from last time
 
-If you go to the core page of [https://github.com/codespaces](https://github.com/codespaces) and you see an existing codespace from last week, you can restart it using the (...) menu
+If you go to the core page of [https://github.com/codespaces](https://github.com/codespaces) and you see an existing codespace from the morning, you can restart it using the (...) menu
 
 ![img](slides/static/img/codespacemenu.png)
 
@@ -64,50 +77,42 @@ If you go to the core page of [https://github.com/codespaces](https://github.com
 
 ![img](slides/static/img/codespace.png)
 
-## 3. Install Google Cloud SDK & Configure the shell
+## 3. Configure the Google Cloud SDK
 
-If you want to interact with GCP from your computer or codespaces, you will need to install the [Google Cloud SDK](https://cloud.google.com/sdk), which will also install a shell if you are on windows
+The [Google Cloud SDK](https://cloud.google.com/sdk) is required to interact with GCP from the command line.
 
-!!! warning
-    If you have a codespace cloned from [mine](https://github.com/fchouteau/isae-cloud-computing-codespace), the google cloud sdk is already installed. Try `gcloud`to check that, and skip this if this returns something
+!!! success "Already installed"
+    If you are using the [course Codespace](https://github.com/fchouteau/isae-cloud-computing-codespace), the Google Cloud SDK is **already installed**. You can verify this by running `gcloud --version`.
 
-!!! note
-    You can install the cloud shell locally, but I recommend using your **codespace**
+Run `gcloud init` in your terminal to configure the SDK with your account:
 
-??? "Installing locally"
+```bash
+gcloud init
+```
 
-    The best ways to interact with google cloud SDK is with a terminal so in that order:
-
-    * Ubuntu / Debian <https://cloud.google.com/sdk/docs/install#deb>
-    * Other Linux (either VM or native): <https://cloud.google.com/sdk/docs/install#linux>
-    * MacOS: <https://cloud.google.com/sdk/docs/install#mac>
-    * Windows Subsystem for Linux: see Linux
-    * Windows: <https://cloud.google.com/sdk/docs/install#windows>
-
-??? "Installing on codespace"
-
-    If you are on codespace, run the commands below to install the gcloud tool to your machine
-
-    Note : If you used the custom codespace, it should already be installed, try gcloud init directly
-
-    ```bash
-    echo "deb https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-    sudo apt-get update && sudo apt-get install google-cloud-cli
-    ```
-
-
-Then run `gcloud init` in your terminal to configure the [google cloud sdk](https://cloud.google.com/sdk/docs/initializing) with your account
-
-You should at some point see at terminal with a link. Click on the link and login with your google accound, then copy the token to your codespace.
+You should see a terminal with a link. Click on the link, login with your Google account, then copy the token back to your Codespace.
 
 ![logintoken](slides/static/img/login.png)
 
-Your github codespace is now configured with your google cloud platform credentials
+Your GitHub Codespace is now configured with your Google Cloud Platform credentials.
+
+??? info "Reference: Installing gcloud CLI (not needed for this hands-on)"
+    If you need to install the Google Cloud SDK on your own machine later:
+
+    * Ubuntu / Debian: <https://cloud.google.com/sdk/docs/install#deb>
+    * Other Linux: <https://cloud.google.com/sdk/docs/install#linux>
+    * MacOS: <https://cloud.google.com/sdk/docs/install#mac>
+    * Windows: <https://cloud.google.com/sdk/docs/install#windows>
 
 ## 4. My first Google Compute Engine Instance
 
-First, we will make our first steps by creating a compute engine instance (a vm) using the console, connecting to it via SSH, interacting with it, uploading some files, and we will shut it down and make the magic happen by resizing it
+!!! tip "Learning objectives"
+    - Create a VM using the GCP Console
+    - Connect via SSH from your Codespace
+    - Understand cloud elasticity (resizing VMs)
+    - Transfer files between local machine and cloud VM
+
+First, we will make our first steps by creating a compute engine instance (a VM) using the console, connecting to it via SSH, interacting with it, uploading some files, and we will shut it down and make the magic happen by resizing it.
 
 * What is [google cloud compute engine ?](https://cloud.google.com/compute/docs/concepts) try to describe it with your own words
 
@@ -116,35 +121,44 @@ First, we will make our first steps by creating a compute engine instance (a vm)
 * Create your VM from the google cloud interface : Go to [this link](https://cloud.google.com/compute/docs/instances/create-start-instance#startinstanceconsole) and follow the "CONSOLE" instruction
 
 * Create an instance with the following parameters
-    * type: n1-standard-1
-    * zone: europe-west1-b (Belgium)
+    * type: e2-standard-2
+    * zone: europe-west9-a (Paris)
     * os: ubuntu 22.04 x86
-    * boot disk size: 10 Gb
+    * boot disk size: 10 GB
     * boot disk type: pd-standard
 * Give it a name of your choice (that you can remember)
 * **DO NOT SHUT IT DOWN** for now
 
-??? Note
+??? note "CLI equivalent"
 
-    If you were using the command line, you would have done this
-    
+    If you were using the command line, you would run:
+
     ```bash
-    gcloud compute instances create {name} --project={your-project} --zone={your-zone} \
-      --machine-type=n1-standard-1 \
-      --image=ubuntu-2204-jammy-v20231030 \
-      --image-project=ubuntu-os-cloud
-      --create-disk=auto-delete=yes,boot=yes,device-name=dev-instance-{index},image=projects/ubuntu-os-cloud/global/images/ubuntu-2204-jammy-v20231030,mode=rw,size=10,type=projects/sdd2324/zones/{your-zone}/diskTypes/pd-standard \
+    gcloud compute instances create {name} \
+      --project={your-project} \
+      --zone=europe-west9-a \
+      --machine-type=e2-standard-2 \
+      --image-family=ubuntu-2204-lts \
+      --image-project=ubuntu-os-cloud \
+      --boot-disk-size=10GB \
+      --boot-disk-type=pd-standard
     ```
 
 ### 4b. Connecting to SSH
 
-* Connect to ssh from the github codespace
+* Connect to SSH from the GitHub Codespace
 
     ??? solution
         `gcloud compute ssh ${MACHINE-NAME}`
 
-    !!! note
-        We are using `google compute ssh` instead of ssh. This is an automated tool that takes care of locating your machine in GCP and transferring the keys
+??? info "Why use gcloud compute ssh instead of regular ssh?"
+    `gcloud compute ssh` is a wrapper around standard SSH that:
+
+    1. **Automatically finds your VM** - no need to know the IP address
+    2. **Handles SSH key management** - creates and distributes keys automatically
+    3. **Works through IAP** - can connect even without public IP (more secure)
+
+    Under the hood, it's essentially: `ssh -i ~/.ssh/google_compute_engine username@<vm-ip>`
 
 * Check available disk space
 
@@ -170,7 +184,7 @@ First, we will make our first steps by creating a compute engine instance (a vm)
 
 * Shutdown the VM (from the web browser), check the previous codelab to see how to do it
 * Select it and click on EDIT
-* Change the machine type to `n1-standard-2` ([link to documentation](https://cloud.google.com/compute/docs/instances/changing-machine-type-of-stopped-instance))
+* Change the machine type to `e2-standard-4` ([link to documentation](https://cloud.google.com/compute/docs/instances/changing-machine-type-of-stopped-instance))
 * Relaunch it, reconnect to it and try to check using `htop` the number of cores & RAM available
 * Note : If you run `cat /proc/cpuinfo` again you will see that you are running on the same hardware !
 
@@ -183,9 +197,8 @@ Note: If you had any files and specific configuration, they would still be here 
 * We will use the terminal to transfer some files ***from** your computer (or codespaces) **to** this machine,
 * If you use cloud shell you can do it as well : create a dummy file in cloud shell
 
-* Follow [this link](https://cloud.google.com/compute/docs/instances/transfer-files#transfergcloud) to learn how to use the gcloud cli tool to transfer files to your instance
- TOC
-{:toc}
+* Follow [this link](https://cloud.google.com/compute/docs/instances/transfer-files#transfergcloud) to learn how to use the gcloud CLI tool to transfer files to your instance
+
 * For experts, it's possible to do it manually using [rsync from ssh](https://phoenixnap.com/kb/how-to-rsync-over-ssh) or [scp](https://cloud.google.com/compute/docs/instances/transfer-files#scp)
 
 * Transfer some files to your `/home/${USER}` directory
@@ -214,72 +227,122 @@ See section 5.
 
 Congratulations :)
 
+!!! success "What you learned in this section"
+    - **VM creation**: Using both the Console (GUI) and CLI to create compute instances
+    - **SSH access**: Connecting to remote VMs with `gcloud compute ssh`
+    - **Cloud elasticity**: Resizing VMs on-the-fly (more CPU/RAM without losing data)
+    - **File transfer**: Using `gcloud compute scp` to move files to/from VMs
+    - **Persistent sessions**: Using `tmux` to keep processes running after disconnection
+
 ## 5. Interacting with Google Cloud Storage
 
-Here we will discover google cloud storage, upload some files from your computer and download them from your instance in the cloud
+!!! tip "Learning objectives"
+    - Understand object storage concepts (buckets, objects)
+    - Use the GCP Console to manage storage
+    - Use the `gcloud storage` CLI for file operations
+    - Configure VM access scopes for Cloud Storage
 
-* What is [Google Cloud Storage ?](https://cloud.google.com/storage) Try to describe it with your own words
+Here we will discover Google Cloud Storage, upload some files from your computer and download them from your instance in the cloud.
 
-* Use [this tutorial](https://cloud.google.com/storage/docs/discover-object-storage-console) to upload something from your computer to google cloud storage from the web browser (**DO NOT DELETE THE FILES YET**)
+* What is [Google Cloud Storage?](https://cloud.google.com/storage) Try to describe it in your own words.
 
-Now we will download it using the google cloud CLI tool. Here's [the documentation](https://cloud.google.com/storage/docs/uploading-objects#gsutil)
+* Use [this tutorial](https://cloud.google.com/storage/docs/discover-object-storage-console) to upload something from your computer to Google Cloud Storage from the web browser (**DO NOT DELETE THE FILES YET**)
 
-Follow the [tutorial](https://cloud.google.com/storage/docs/discover-object-storage-gsutil) to learn how to do what you just did, but this time using `gsutil` from your codespace
+Now we will download it using the `gcloud storage` CLI. Here's [the documentation](https://cloud.google.com/storage/docs/discover-object-storage-gcloud).
+
+Common commands:
+
+```bash
+# List buckets
+gcloud storage ls
+
+# List contents of a bucket
+gcloud storage ls gs://your-bucket-name
+
+# Upload a file
+gcloud storage cp local-file.txt gs://your-bucket-name/
+
+# Download a file
+gcloud storage cp gs://your-bucket-name/remote-file.txt ./
+```
 
 * List the content of the bucket you just created (if you deleted it previously, create a new one)
-* Upload a file to a bucket 
+* Upload a file to a bucket
 * Download a file from a bucket
 
-**Optional : What if we want to do the same from the GCE instance ?**
+**Optional: What if we want to do the same from the GCE instance?**
 
 * Now go back to your machine
 
-* Try to list bucket, download and upload files
+* Try to list buckets, download and upload files
 
-* Is it possible ?
+* Is it possible?
 
-* If not, it's because you have to allow the instance to access google cloud storage
+* If not, it's because you have to allow the instance to access Google Cloud Storage
 
 * Shutdown the VM and edit it (like we did when we resized the instance)
 
-* Check "access scopes", select "set access for each api", and select "storage / admin"
+* Check "access scopes", select "set access for each API", and select "storage / admin"
 
-* Now restart you machine, connect back to it. You should be able to upload to google cloud storage now files now
+??? info "What are access scopes?"
+    **Access scopes** are a legacy way to control what GCP APIs a VM can access.
+
+    By default, VMs cannot access Cloud Storage. You must explicitly grant access:
+
+    - `storage-ro` - Read-only access to buckets
+    - `storage-rw` - Read and write access
+    - `storage-full` - Full control (including delete, set ACLs)
+
+    Modern best practice: Use service accounts with IAM roles instead.
+
+* Now restart your machine, connect back to it. You should be able to upload to Google Cloud Storage now
 
 * You can delete the VM as well, we will not use it
 
+!!! success "What you learned in this section"
+    - **Object storage vs file storage**: Buckets contain objects (files), accessed via URLs
+    - **Cloud Storage CLI**: Using `gcloud storage ls`, `cp` for uploads/downloads
+    - **Access scopes**: VMs need explicit permissions to access other GCP services
+    - **Data pipeline pattern**: Upload data to storage, process on VMs, store results back
+
 ## 6. Deep Learning VM, SSH and Port Forwarding
 
-### 6a. deep learning vm
+!!! tip "Learning objectives"
+    - Understand pre-configured VM images (Deep Learning VMs)
+    - Create VMs using the `gcloud` CLI instead of the Console
+    - Use SSH port forwarding to access remote Jupyter servers
+    - Understand the double tunneling: Codespace → GCE VM
 
-Here we will use the google cloud sdk to create a more complex VM with a pre-installed image and connect to its jupyter server
+### 6a. Deep Learning VM
 
-Google Cloud Platform comes with a set of services targeted at data scientists called [AI Platform](https://cloud.google.com/ai-platform), among them are [Deep Learning VMs](https://cloud.google.com/ai-platform/deep-learning-vm/docs) which are essentially preinstalled VMs (more or less the same configuration as google colab) with some bonuses.
+Here we will use the Google Cloud SDK to create a more complex VM with a pre-installed image and connect to its Jupyter server.
+
+Google Cloud Platform comes with a set of services targeted at data scientists called [Vertex AI](https://cloud.google.com/vertex-ai), among them are [Deep Learning VMs](https://cloud.google.com/deep-learning-vm/docs) which are VMs pre-installed with ML frameworks (TensorFlow, PyTorch, etc.) and Jupyter.
 
 * What are "Deep Learning VMs" ? Try to use your own words
 * What would be the alternative if you wanted to get a machine with the same installation ?
 
 ### 6b. create a google compute engine instance using the command line
 
-Instead of using the browser to create this machine, we will be using the [CLI to create instances](https://cloud.google.com/ai-platform/deep-learning-vm/docs/cli)
+Instead of using the browser to create this machine, we will be using the [CLI to create instances](https://cloud.google.com/deep-learning-vm/docs/cli)
 
 ```bash
-export INSTANCE_NAME="fch-dlvm-1" # <--- RENAME THIS !!!!!!!!!!
+export INSTANCE_NAME="yourname-dlvm" # <--- RENAME THIS !!!!!!!!!!
 
 gcloud compute instances create $INSTANCE_NAME \
-        --zone="europe-west1-b" \
-        --image-family="common-cpu" \
-        --image-project="deeplearning-platform-release" \
+        --zone="europe-west9-a" \
+        --image-family="common-cpu-debian-11" \
+        --image-project="ml-images" \
         --maintenance-policy="TERMINATE" \
         --scopes="storage-rw" \
-        --machine-type="n1-standard-1" \
+        --machine-type="e2-standard-2" \
         --boot-disk-size="50GB" \
         --boot-disk-type="pd-standard"
 ```
 
 * Notice the similarities between the first VM you created and this one,
 * What changed ?
-* If you want to learn more about compute images, image families etc... [go here](https://cloud.google.com/ai-platform/deep-learning-vm/docs/concepts-images)
+* If you want to learn more about compute images, image families, etc., [go here](https://cloud.google.com/deep-learning-vm/docs/images)
 
 ### 6c. connect with ssh to this machine with port forwarding
 
@@ -287,16 +350,16 @@ gcloud compute instances create $INSTANCE_NAME \
 
 * Forward the port 8888 when you're connecting to the instance
 
-* Documentation [forward some ports](https://cloud.google.com/ai-platform/deep-learning-vm/docs) as well
+* Documentation on [port forwarding](https://cloud.google.com/deep-learning-vm/docs/jupyter) as well
 
 ??? solution
-    `gcloud compute ssh user@machine-name --zone=europe-west1-b -- -L 8888:localhost:8888`
+    `gcloud compute ssh $INSTANCE_NAME --zone=europe-west9-a -- -L 8888:localhost:8888`
 
 If you are in codespace, use the port forwarding utility, add a new port (8888). It may be done automatically.
 
 * Explore the machine the same way we did previously
 
-* You can see you have a conda envirnoment installed. Try to query the list of things installed
+* You can see you have a conda environment installed. Try to query the list of things installed
 
 ??? solution
     `conda list`
@@ -324,17 +387,28 @@ If you are in codespace, use the port forwarding utility, add a new port (8888).
 
 Don't disconnect from the VM, we will continue below
 
-## 7. End to end example
+!!! success "What you learned in this section"
+    - **Pre-configured images**: Deep Learning VMs come with ML frameworks pre-installed
+    - **CLI-based provisioning**: Creating VMs with `gcloud compute instances create`
+    - **SSH port forwarding**: The `-L 8888:localhost:8888` pattern to tunnel services
+    - **Double tunneling**: Codespace → GCE VM chain for accessing remote Jupyter
 
-We will replicate the following setup (simplified)
+## 7. End-to-End Example
+
+!!! tip "Learning objectives"
+    - Combine all skills: VMs, SSH, file transfer, Cloud Storage
+    - Run an ML training job on a remote machine
+    - Transfer artifacts (model weights) via Cloud Storage
+
+We will replicate the following setup (simplified):
 
 ![setup](slides/static/img/gce_workflow.png)
 
-- Your development machine (the github codespace) has some training code
+- Your development machine (the GitHub Codespace) has some training code
 - You have a "high performance" machine in the cloud
 - You want to transfer the training code to the VM
-- You want to run the training in a remote machine
-- Once the training is done you want to upload the model weights to google cloud storage
+- You want to run the training on a remote machine
+- Once the training is done you want to upload the model weights to Google Cloud Storage
 
 * In your codespace, in a new folder (eg. `training`), copy the content of [this](https://github.com/pytorch/examples/tree/main/mnist)
 
@@ -349,51 +423,70 @@ It should train a neural network on the MNIST dataset. BONUS : Run it inside a t
 
 * Once it has finished, you should see a new file, the model weights `mnist_cnn.pt`
 
-* From the GCE VM : Upload the weights to the google cloud storage bucket you previously created
+* From the GCE VM: Upload the weights to the Google Cloud Storage bucket you previously created
 
 ??? solution
     `gcloud storage cp mnist_cnn.pt gs://(...)`
 
-* From the GitHubCodespace : Download the model weights from google cloud storage
+* From the GitHub Codespace: Download the model weights from Google Cloud Storage
 
 ??? solution
     `gcloud storage cp gs://(...) mnist_cnn.pt`
 
-!!! success
-    yay ! Don't forget to cleanup
+!!! success "What you learned in this section"
+    - **End-to-end ML workflow**: Code → Remote execution → Artifact storage → Retrieval
+    - **Cloud Storage as artifact store**: Central location for model weights and data
+    - **Combining skills**: SSH, file transfer, and storage work together
+    - **Production patterns**: This is how real ML pipelines operate at scale
 
-## 8. IMPORTANT : Cleaning up
+## 8. Introduction to Infrastructure as Code
 
-!!! warning
-    * **DELETE ALL THE BUCKES YOU CREATED**
-    * **DELETE ALL THE GCP INSTANCES YOU CREATED**
-    * **SHUTDOWN YOUR CODESPACE**
+!!! tip "Learning objectives"
+    - Understand the concept of Infrastructure as Code (IaC)
+    - Learn about declarative infrastructure definitions
+    - See how to automate cloud resource provisioning
 
-How to shutdown codespaces :
+So far, you have been creating VMs manually (via Console or CLI). In production environments, infrastructure is defined in **configuration files** that can be versioned and automated.
 
-![stop](slides/static/img/stop.png)
+[This tutorial](https://cloud.google.com/deployment-manager/docs/quickstart) will guide you through Google Cloud Deployment Manager, which is a way to deploy Google Compute Engine instances using configuration files.
 
-- Click on stop codespace to shut it down (you "pay" for the disk with your free credits)
-- Click on kill codespace to delete it
-
-## 9. Optional - Introduction to infrastructure as code
-
-* [This tutorial](https://cloud.google.com/deployment-manager/docs/quickstart) will guide you through google cloud deployment manager, which is a way to deploy google compute engine instances using configuration files
+!!! note "Modern alternatives"
+    Google Cloud Deployment Manager is GCP-specific. In practice, many teams use **Terraform** which works across all cloud providers (AWS, Azure, GCP).
 
 * Don't forget to adapt machine configurations and zone to your use case (see above)
 
-If you run this, don't forget to clean everything up afterwards
+If you run this, **don't forget to clean everything up afterwards!**
+
+!!! success "What you learned in this section"
+    - **Infrastructure as Code (IaC)**: Define infrastructure in version-controlled config files
+    - **Reproducibility**: Same config = same infrastructure, every time
+    - **Automation**: No more clicking through UIs for repetitive tasks
+    - **Industry tools**: Deployment Manager (GCP), Terraform (multi-cloud)
+
+## 9. IMPORTANT: Cleaning up
+
+!!! warning
+    * **DELETE ALL THE BUCKETS YOU CREATED**
+    * **DELETE ALL THE GCP INSTANCES YOU CREATED**
+    * **SHUTDOWN YOUR CODESPACE**
+
+How to shutdown Codespaces:
+
+![stop](slides/static/img/stop.png)
+
+- Click on "Stop codespace" to shut it down (you "pay" for the disk with your free credits)
+- Click on "Delete" to remove it completely
 
 ## 10. Optional - Managed Database
 
-* I think you've just done a class on SQL databases
+* You have just completed a class on SQL databases
 
-* Here are the [managed SQL services of google cloud](https://console.cloud.google.com/sql/instances)
+* Here are the [managed SQL services of Google Cloud](https://console.cloud.google.com/sql/instances)
 
 !!! question
-    Can you describe what it is ?
-    What do you pay to google ? How much does it cost ?
-    What is a managed service in cloud vocabulary ?
+    Can you describe what it is?
+    What do you pay to Google? How much does it cost?
+    What is a "managed service" in cloud vocabulary?
 
-* If you still have some code to interact with a database, you can try launching one here and redoing your classes
+* If you still have some code to interact with a database, you can try launching one here and redoing your exercises
 

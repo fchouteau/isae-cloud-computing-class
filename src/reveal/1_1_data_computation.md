@@ -27,6 +27,12 @@ Florient CHOUTEAU
 
 <!--v-->
 
+All the class material is available on [the course website](https://supaerodatascience.github.io/DE/)
+
+You do not need to git clone anything
+
+<!--v-->
+
 ### Who ?
 
 <img src="static/img/ads_logo.jpg" alt="" width="128px" height="128px" style="background:none; border:none; box-shadow:none;"/>

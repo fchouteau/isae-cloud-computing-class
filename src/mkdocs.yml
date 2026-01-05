@@ -41,11 +41,11 @@ nav:
   - Containers, Docker:
     - 1. Lecture: 1_3a_containers.md
     - 2. Hands-on (Docker): 1_3b_handson_docker.md
-  - Google Cloud and Docker BE:
+  - Workshop GCP & Docker:
     - 1. Docker Workflow: 1_4a_docker_workflow.md
-    - 2. Compute Workflow: 1_4b_gcp_workflow.md
-    - 3. Deployment Workflow: 1_4c_deployment_workflow.md
-  - Deployment:
+    - 2. GCP Compute Workflow: 1_4b_gcp_workflow.md
+    - 3. GCP Deployment Workflow: 1_4c_deployment_workflow.md
+  - Workshop Deploy your ML model into production:
     - 1. Lecture: 1_5a_deployment.md
     - 2. Deploy your ML model into production: 1_5b_deployment_be.md
   - Recap & Reading List: 1_6_conclusion.md

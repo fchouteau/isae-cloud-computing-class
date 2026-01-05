@@ -128,7 +128,7 @@ But Docker is available on [Windows and MacOS](https://www.docker.com/products/d
 
 <!--v-->
 
-![](https://res.cloudinary.com/practicaldev/image/fetch/s--KO9goPOF--/c_imagga_scale,f_auto,fl_progressive,h_900,q_auto,w_1600/https://dev-to-uploads.s3.amazonaws.com/uploads/articles/p6v8jzajfg7sgcy7d8fs.png)  <!-- .element: height="40%" width="40%" -->
+![](https://i.ytimg.com/vi/uRQ7Qm_0BZ8/maxresdefault.jpg)  <!-- .element: height="40%" width="40%" -->
 
 https://www.youtube.com/c/AurelieVache/videos
 
@@ -246,11 +246,11 @@ Deployment
 
 Reproducible development environment
 
-![](https://sp-ao.shortpixel.ai/client/to_webp,q_glossy,ret_img/https://godatadriven.com/wp-content/uploads/2022/10/devcontainer-overview-4.png) <!-- .element: height="40%" width="40%" -->
+![](https://containers.dev/img/dev-container-stages.png) <!-- .element: height="40%" width="40%" -->
 
 <!--v-->
 
-Codespace is actally a container...
+Codespace is actually a container...
 
 ![codespace](https://docs.github.com/assets/cb-171798/mw-1440/images/help/codespaces/configure-dev-container.webp) <!-- .element: height="40%" width="40%" -->
 
@@ -320,7 +320,7 @@ https://polyaxon.com/
 
 Docker:
 ```Dockerfile
-FROM python:3.6
+FROM python:3.11
 RUN pip install torch
 CMD ipython
 ```
@@ -357,7 +357,7 @@ container = NewImage(a=0,b=1)
 * Used to build Images
 
 ```Dockerfile
-FROM python:3.7
+FROM python:3.11
 ENV MYVAR="HELLO"
 RUN pip install torch
 COPY my-conf.txt /app/my-conf.txt
@@ -409,7 +409,7 @@ docker run my-image
 * Multi-containers application with networking (communication)
 * "Glue" for complex applications and microservices
 
-![compose](https://www.biaudelle.fr/wp-content/uploads/2021/07/docker-compose-archi.png)
+![compose](https://miro.medium.com/v2/resize:fit:1400/1*IzzwDYFNsfHxYexpgHqqSA.png)
 
 <!--v-->
 
@@ -418,8 +418,6 @@ docker run my-image
 A database and a webapp
 
 ```yaml
-version: '3'
-
 services:
   app:
     build: .
@@ -430,10 +428,10 @@ services:
       - 5000:5000
 
   redis:
-    image: redis:4.0.11-alpine
+    image: redis:7-alpine
 ```
 
-`docker-compose up` starts both images (you will see that next week)
+`docker compose up` starts both containers (you will see that next week)
 
 <!--v-->
 
@@ -470,93 +468,4 @@ services:
 
 <!--v-->
 
-#### bonus : play-with-docker
-
-* You need to have a docker hub account : https://hub.docker.com/
-* https://labs.play-with-docker.com/
-* Free, interactive, cluster of vms to experiment docker with
-* https://training.play-with-docker.com/ lots of resoures !
-
-<!--v-->
-
 ![break](https://media.giphy.com/media/WSrMZn2cuMs2UQ6Rnq/giphy.gif)
-
-<!--s-->
-
-### Cheatsheets
-
-<!--v-->
-
-![cheatsheet](static/img/docker_cheat_sheet.png) <!-- .element: height="60%" width="60%" -->
-
-<!--v-->
-
-![cheatsheet](static/img/docker_cheat_sheet2.png)  <!-- .element: height="60%" width="60%" -->
-
-<!--v-->
-
-#### Dockerfile : Description d'une image
-
-```Dockerfile
-FROM python:3.7
-ENV MYVAR="HELLO"
-RUN pip install torch
-COPY my-conf.txt /app/my-conf.txt
-ADD my-file.txt /app/my-file.txt
-EXPOSE 9000
-WORKDIR "/WORKDIR"
-USER MYUSER
-ENTRYPOINT ["/BIN/BASH"]
-CMD ["ECHO” , "${MYVAR}"]
-```
-
-```bash
-docker build -f Dockerfile -t my-image:1.0 .
-docker run my-image
-```
-
-<!--v-->
-
-#### Images
-
-```text
-"docker search" sur un registry
-    public (DokerHub)
-    privé (entreprise)
-"docker build" à partir d'un Dockerfile
-"docker commit" sur un conteneur modifié
-"docker import" d'une arbo de base :
-
-cat centos6-base.tar | docker import - centos6-base
-```
-
-<!--v-->
-
-#### Docker CLI
-
-```text
-    docker create   : crée un conteneur
-    docker run      : crée et démarre un conteneur
-    docker stop     : arrête un conteneur
-    docker start    : démarre un conteneur
-    docker restart  : redémarre un conteneur
-    docker rm       : supprime un conteneur
-    docker kill     : envoie un SIGKILL au conteneur
-    docker attach   : se connecte à un conteneur en exécution 
-    docker exec     : exécute une cmd dans un conteneur
-```
-
-<!--v-->
-
-#### Docker run
-
-```text
--d, --detach       Run container in background and print ID
--e, --env=[]       Set environment variables
--i, --interactive  Keep STDIN open even if not attached
--p, --publish=[]   Publish a container's port(s) to the host
---rm        5_orchestration       Automatically rm container when it exits
--t, --tty          Allocate a pseudo-TTY
--v, --volume=[]    Bind mount a volume
--w, --workdir      Working directory inside the container
-```
