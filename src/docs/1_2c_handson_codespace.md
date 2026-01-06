@@ -251,7 +251,7 @@ pip install torch torchvision
 Then run the training script:
 
 ```bash
-python training/training.py --epochs 3
+python training/training.py --epochs 2 --save-model
 ```
 
 !!! question "Think about it"
@@ -271,7 +271,7 @@ Once training is complete, you need to retrieve the model file to your local mac
 
 **Option A: Via the file explorer**
 
-- Right-click on the `model.pth` file in the VS Code file explorer
+- Right-click on the `mnist_cnn.pt` file in the VS Code file explorer
 - Select "Download"
 
 **Option B: Via the terminal (if you have `gh` CLI locally)**
@@ -297,7 +297,7 @@ gh codespace cp remote:/workspaces/isae-cloud-computing-codespace/training/model
     - **File transfer**: Moving files between local and remote environments
     - **The cloud workflow**: Edit locally (or remotely), run remotely, retrieve results
 
-## 3. Building a webapp (Preview & Bonus)
+## 3. (Optional) Building a webapp
 
 !!! note "Preview for Day 2"
     This section is a **preview** of what you'll do in Day 2 when we cover **deployment**.

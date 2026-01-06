@@ -29,7 +29,7 @@
 
     Forgot to clean up? Your credits will drain quickly.
 
-    If you reach the end of the class without having finished everything, go to the cleaning section at the end and carry it.
+    If you reach the end of the class without having finished everything, go to the cleaning section 9 at the end.
 
 ## 1. Create your GCP Account
 
@@ -85,7 +85,10 @@ If you go to the core page of [https://github.com/codespaces](https://github.com
 The [Google Cloud SDK](https://cloud.google.com/sdk) is required to interact with GCP from the command line.
 
 !!! success "Already installed"
-    If you are using the [course Codespace](https://github.com/fchouteau/isae-cloud-computing-codespace), the Google Cloud SDK is **already installed**. You can verify this by running `gcloud --version`.
+    If you are using the [course Codespace](https://github.com/fchouteau/isae-cloud-computing-codespace), the Google Cloud SDK should be **already installed**. You can verify this by running `gcloud --version`.
+
+!!! warning
+    If the gcloud is not installed in the codespace, run `bash install.sh` to install it.
 
 Run `gcloud init` in your terminal to configure the SDK with your account:
 
@@ -308,95 +311,7 @@ gcloud storage cp gs://your-bucket-name/remote-file.txt ./
     - **Access scopes**: VMs need explicit permissions to access other GCP services
     - **Data pipeline pattern**: Upload data to storage, process on VMs, store results back
 
-## 6. Deep Learning VM, SSH and Port Forwarding
-
-!!! tip "Learning objectives"
-    - Understand pre-configured VM images (Deep Learning VMs)
-    - Create VMs using the `gcloud` CLI instead of the Console
-    - Use SSH port forwarding to access remote Jupyter servers
-    - Understand the double tunneling: Codespace → GCE VM
-
-### 6a. Deep Learning VM
-
-Here we will use the Google Cloud SDK to create a more complex VM with a pre-installed image and connect to its Jupyter server.
-
-Google Cloud Platform comes with a set of services targeted at data scientists called [Vertex AI](https://cloud.google.com/vertex-ai), among them are [Deep Learning VMs](https://cloud.google.com/deep-learning-vm/docs) which are VMs pre-installed with ML frameworks (TensorFlow, PyTorch, etc.) and Jupyter.
-
-* What are "Deep Learning VMs" ? Try to use your own words
-* What would be the alternative if you wanted to get a machine with the same installation ?
-
-### 6b. create a google compute engine instance using the command line
-
-Instead of using the browser to create this machine, we will be using the [CLI to create instances](https://cloud.google.com/deep-learning-vm/docs/cli)
-
-```bash
-export INSTANCE_NAME="yourname-dlvm" # <--- RENAME THIS !!!!!!!!!!
-
-gcloud compute instances create $INSTANCE_NAME \
-        --zone="europe-west9-a" \
-        --image-family="common-cpu-debian-11" \
-        --image-project="ml-images" \
-        --maintenance-policy="TERMINATE" \
-        --scopes="storage-rw" \
-        --machine-type="e2-standard-2" \
-        --boot-disk-size="50GB" \
-        --boot-disk-type="pd-standard"
-```
-
-* Notice the similarities between the first VM you created and this one,
-* What changed ?
-* If you want to learn more about compute images, image families, etc., [go here](https://cloud.google.com/deep-learning-vm/docs/images)
-
-### 6c. connect with ssh to this machine with port forwarding
-
-* Connect to your instance using the gcloud cli & ssh from the codespace with port forwarding
-
-* Forward the port 8888 when you're connecting to the instance
-
-* Documentation on [port forwarding](https://cloud.google.com/deep-learning-vm/docs/jupyter) as well
-
-??? solution
-    `gcloud compute ssh $INSTANCE_NAME --zone=europe-west9-a -- -L 8888:localhost:8888`
-
-If you are in codespace, use the port forwarding utility, add a new port (8888). It may be done automatically.
-
-* Explore the machine the same way we did previously
-
-* You can see you have a conda environment installed. Try to query the list of things installed
-
-??? solution
-    `conda list`
-    `pip list`
-
-* is (py)torch installed ? If not, install it
-
-??? solution
-    `pip list | grep torch`
-    `pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu`
-
-### 6d. Run jupyter lab on the GCE VM
-
-* In the GCE VM, run `jupyter lab`
-
-* Copy the credentials
-
-* Connect to the port 8888 of the GitHub CodeSpace. You should be redirected to a jupyter instance
-
-!!! question
-    Where are we ? Where is the jupyter lab hosted ?
-    What is the difference between this and the jupyter lab we launched from codespace last week ?
-
-![tunnels](slides/static/img/codespaceception.png)
-
-Don't disconnect from the VM, we will continue below
-
-!!! success "What you learned in this section"
-    - **Pre-configured images**: Deep Learning VMs come with ML frameworks pre-installed
-    - **CLI-based provisioning**: Creating VMs with `gcloud compute instances create`
-    - **SSH port forwarding**: The `-L 8888:localhost:8888` pattern to tunnel services
-    - **Double tunneling**: Codespace → GCE VM chain for accessing remote Jupyter
-
-## 7. End-to-End Example
+## 6. End-to-End Example
 
 !!! tip "Learning objectives"
     - Combine all skills: VMs, SSH, file transfer, Cloud Storage
@@ -442,7 +357,95 @@ It should train a neural network on the MNIST dataset. BONUS : Run it inside a t
     - **Combining skills**: SSH, file transfer, and storage work together
     - **Production patterns**: This is how real ML pipelines operate at scale
 
-## 8. Introduction to Infrastructure as Code
+## 7. Optional – Deep Learning VM, SSH and Port Forwarding
+
+!!! tip "Learning objectives"
+    - Understand pre-configured VM images (Deep Learning VMs)
+    - Create VMs using the `gcloud` CLI instead of the Console
+    - Use SSH port forwarding to access remote Jupyter servers
+    - Understand the double tunneling: Codespace → GCE VM
+
+### 7a. Deep Learning VM
+
+Here we will use the Google Cloud SDK to create a more complex VM with a pre-installed image and connect to its Jupyter server.
+
+Google Cloud Platform comes with a set of services targeted at data scientists called [Vertex AI](https://cloud.google.com/vertex-ai), among them are [Deep Learning VMs](https://cloud.google.com/deep-learning-vm/docs) which are VMs pre-installed with ML frameworks (TensorFlow, PyTorch, etc.) and Jupyter.
+
+* What are "Deep Learning VMs" ? Try to use your own words
+* What would be the alternative if you wanted to get a machine with the same installation ?
+
+### 7b. create a google compute engine instance using the command line
+
+Instead of using the browser to create this machine, we will be using the [CLI to create instances](https://cloud.google.com/deep-learning-vm/docs/cli)
+
+```bash
+export INSTANCE_NAME="yourname-dlvm" # <--- RENAME THIS !!!!!!!!!!
+
+gcloud compute instances create $INSTANCE_NAME \
+        --zone="europe-west9-a" \
+        --image-family="common-cpu-debian-11" \
+        --image-project="ml-images" \
+        --maintenance-policy="TERMINATE" \
+        --scopes="storage-rw" \
+        --machine-type="e2-standard-2" \
+        --boot-disk-size="50GB" \
+        --boot-disk-type="pd-standard"
+```
+
+* Notice the similarities between the first VM you created and this one,
+* What changed ?
+* If you want to learn more about compute images, image families, etc., [go here](https://cloud.google.com/deep-learning-vm/docs/images)
+
+### 7c. connect with ssh to this machine with port forwarding
+
+* Connect to your instance using the gcloud cli & ssh from the codespace with port forwarding
+
+* Forward the port 8888 when you're connecting to the instance
+
+* Documentation on [port forwarding](https://cloud.google.com/deep-learning-vm/docs/jupyter) as well
+
+??? solution
+    `gcloud compute ssh $INSTANCE_NAME --zone=europe-west9-a -- -L 8888:localhost:8888`
+
+If you are in codespace, use the port forwarding utility, add a new port (8888). It may be done automatically.
+
+* Explore the machine the same way we did previously
+
+* You can see you have a conda environment installed. Try to query the list of things installed
+
+??? solution
+    `conda list`
+    `pip list`
+
+* is (py)torch installed ? If not, install it
+
+??? solution
+    `pip list | grep torch`
+    `pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu`
+
+### 7d. Run jupyter lab on the GCE VM
+
+* In the GCE VM, run `jupyter lab`
+
+* Copy the credentials
+
+* Connect to the port 8888 of the GitHub CodeSpace. You should be redirected to a jupyter instance
+
+!!! question
+    Where are we ? Where is the jupyter lab hosted ?
+    What is the difference between this and the jupyter lab we launched from codespace last week ?
+
+![tunnels](slides/static/img/codespaceception.png)
+
+Don't disconnect from the VM, we will continue below
+
+!!! success "What you learned in this section"
+    - **Pre-configured images**: Deep Learning VMs come with ML frameworks pre-installed
+    - **CLI-based provisioning**: Creating VMs with `gcloud compute instances create`
+    - **SSH port forwarding**: The `-L 8888:localhost:8888` pattern to tunnel services
+    - **Double tunneling**: Codespace → GCE VM chain for accessing remote Jupyter
+
+## 8. Optional - Introduction to Infrastructure as Code
 
 !!! tip "Learning objectives"
     - Understand the concept of Infrastructure as Code (IaC)
