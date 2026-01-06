@@ -35,6 +35,8 @@ sync:
 
 deploy:
 	git checkout $(SOURCE_BRANCH)
+	# deploy site
+	mkdocs gh-deploy -r $(REMOTE) -b gh-pages
 	# build slides
 	cd reveal; reveal-md . \
         --template static/template/reveal.html \
@@ -53,8 +55,6 @@ deploy:
 	git push $(REMOTE) gh-pages
 	# re-checkout current branch
 	git checkout $(SOURCE_BRANCH)
-	# deploy site
-	mkdocs gh-deploy -r $(REMOTE) -b gh-pages
 
 clean:
 	rm -rf site
