@@ -34,7 +34,7 @@
 ## 1. Create your GCP Account
 
 !!! note
-    You should have already done that last week
+    You can skip this for this year, it is provided as reference
 
 Here you will each create a Google Cloud Platform account and project using the student credits given this year,
 
@@ -46,6 +46,9 @@ Here you will each create a Google Cloud Platform account and project using the 
 * From [the interface](https://console.cloud.google.com) you should [create a project](https://cloud.google.com/resource-manager/docs/creating-managing-projects) with a name of your choice (it is recommended to put for example sdd2526-yourname so that it is clear)
 
 ## 2. (re)connect to GitHub Codespaces
+
+!!! note
+    If you are still on the codespace, skip this
 
 ### If you still have your codespace from last time
 
