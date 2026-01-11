@@ -629,24 +629,44 @@ docker run -it <layer-id> /bin/sh
     - **Build context & .dockerignore**: Control what gets sent to the Docker daemon
     - **Debugging**: `docker logs`, `docker exec -it`, `docker inspect` for troubleshooting
 
-## 3. Running CLI apps packaged in docker while mounting volumes
+## 3. Running CLI Apps with Docker: Passing Data at Runtime
 
-Beyond serving web applications, Docker also enables the deployment of packaged applications, such as command-line interfaces and training scripts. This allows for seamless delivery of self-contained apps with bespoke installations to end-users. A particularly valuable use case is packaging machine learning environments for distributed training, facilitating efficient collaboration and scalability
+In Section 2, you built a static website where all content was baked into the image. Now we'll package **CLI applications** that process data passed at runtime - the pattern used for ML training.
 
-To do so, we have to learn about:
+| Aspect | Static Web (Section 2) | CLI App (Section 3) |
+|--------|------------------------|---------------------|
+| Content | Baked into image at build time | Passed at runtime via volumes |
+| Rebuild needed? | Yes, for any content change | No - same image, different data |
+| Use case | Web servers, APIs | Training scripts, data processing |
 
-- Executing command line applications packaged inside docker images
-- Passing both text and files inputs, including files not in the docker image
-- Getting access to file outputs such as models
+### 3.1 Volume Mounting: Sharing Files with Containers
 
-For that we will do several things : 
-- Write a CLI application using [typer](https://typer.tiangolo.com/), a very useful tool for the rest of your career
-- Package the CLI application with both text / file inputs in a docker image
-- Mounting volumes when running a docker images to provide it with the input files, and having access to the results from the main computer
+The `-v` flag connects a folder on your host to a path inside the container, which allows to share files at **runtime**.
 
-### 3.1 A local CLI application
+```bash
+docker run -v /path/on/host:/path/in/container my-image
+```
 
-* Let's modify the `app.py` in 2. with the following code.
+For example with `./` in host and `/app/` in container,
+
+```
+Host Machine              Container
+┌──────────────┐         ┌──────────────┐
+│ ./configs/   │ ◄─────► │ /app/configs │
+│ ./outputs/   │ ◄─────► │ /app/outputs │
+└──────────────┘         └──────────────┘
+```
+
+- Files are shared bidirectionally (changes appear on both sides)
+- Container paths must be absolute (`/app/configs`, not `configs`)
+- No image rebuild needed - just run with different volumes
+
+!!! tip "Now Let's Build This"
+    In the following exercises, you'll create a training CLI, package it in Docker, and run it with different config files **without rebuilding the image**.
+
+### 3.2 A local CLI application
+
+* In the `docker/app.py`, I provided you with the following code :
 
 ```python
 import time
@@ -705,51 +725,78 @@ if __name__ == "__main__":
 
 ```
 
-* Test the application locally using `pip install typer`then `python app.py say-hello {my name}` or `python app.py run-training --config {my config} --output-dir {somewhere}`
+* You can the application locally using `pip install typer`then `python app.py say-hello {my name}` or `python app.py run-training --config {my config} --output-dir {somewhere}`
 
-### 3.2 Packaging it in a dockerfile
+### 3.3 Packaging it in a Dockerfile
 
 We will now package it in a docker file
 
-* Modify the Dockerfile:
-  * Replace `CMD ["python", "/usr/src/app/app.py"]`
+* A provided a `Dockerfile` in the `docker/` folder. Compared to the previous one, here are the key differences:
+  * Replaced `CMD ["python", "/usr/src/app/app.py"]`
   * With `ENTRYPOINT ["python", "/usr/src/app/app.py"]`
 
-* [Differences between CMD and ENTRYPOINT](https://spacelift.io/blog/docker-entrypoint-vs-cmd)
+!!! info "CMD vs ENTRYPOINT"
+    - **CMD**: Arguments in `docker run myimage arg1` **replace** the entire CMD
+    - **ENTRYPOINT**: Arguments in `docker run myimage arg1` are **appended** to ENTRYPOINT
 
-* Rebuild your docker image (maybe give it another name)
+    For CLI apps, use ENTRYPOINT so users pass arguments naturally:
+    ```bash
+    docker run myimage say-hello Alice   # Runs: python app.py say-hello Alice
+    ```
 
-### 3.3 Mounting volumes
+    See also: [CMD vs ENTRYPOINT deep dive](https://spacelift.io/blog/docker-entrypoint-vs-cmd)
+
+* Build the docker image for that application using what you learned.
+
+### 3.4 Running the CLI App
 
 * Now to run the CLI you just have to pass the arguments when running the docker `docker run --rm {your image} {your args}`. Try it with `docker run --rm {your image} say-hello {your name}`
+
+Now you know how to pass arguments to CLI applications in docker containers.
+
+### 3.5 Mounting volumes
 
 !!! warning
     once you have built your container and it works, don't rebuild it again ! We will test the volume mounting options now
 
 * In order to pass a config file, or data to your docker, you need to make it available to your docker. To do that, we have to [mount volumes](https://docs.docker.com/storage/volumes/)
 
-Create a dummy config file (`config.txt`) in another folder (ex: `config/`) then mount it when you run the docker container. You can expose the output directory as well to be able to get your results
+Create a dummy config file (`config.txt`) in a folder (e.g., `configs/`) and an empty `outputs/` folder. Then mount them when you run the container:
 
 ```bash
 docker run --rm \
-  -v {local path to your configs}:/home/configs \
-  -v {local path to your outputs}:/home/outputs \
-  --workdir /home/ \
+  -v $(pwd)/configs:/app/configs \
+  -v $(pwd)/outputs:/app/outputs \
   {your image} \
-  run-training --config {path to your config in DOCKER, eg /home/configs/config.txt}  \
-  --output-dir /home/outputs/
+  run-training --config /app/configs/config.txt --output-dir /app/outputs/
 ```
 
-Note that since you mounted volumes, you must pass the **local path in the docker container** to your config file for it to work and not the **path in your codespace**
+!!! warning "Container Paths vs Host Paths"
+    The paths after `run-training` are **container paths** (where Docker sees the files), not your local paths:
 
-!!! success
-    To be successful here you have to be able to pass a config file that is in your codespace and get the results in your codespace, all while not rebuilding the image as long as the first `hello` passes
+    - `$(pwd)/configs` → your local folder (host)
+    - `/app/configs` → where Docker mounts it (container)
+
+    Your CLI receives `/app/configs/config.txt` because that's where the file exists inside the container.
+
+!!! success "You've Mastered This When:"
+    1. You run training with **different config files** without rebuilding the image
+    2. Output files appear in your **local `outputs/` folder** after the container exits
+    3. You understand why the CLI uses `/app/configs` (container path) not `./configs` (host path)
+
+### 3.6 Troubleshooting Volume Mounts
+
+| Problem | Likely Cause | Solution |
+|---------|--------------|----------|
+| "File not found" in container | Wrong mount path | Verify with `docker run --rm -v $(pwd)/configs:/app/configs myimage ls /app/configs` |
+| Changes don't appear on host | Volume not mounted | Check `-v` syntax is `host:container`, not reversed |
+| Permission denied | Host dir permissions | Run `chmod -R 755 ./outputs` or check file ownership |
 
 !!! success "What you learned in this section"
-    - **ENTRYPOINT vs CMD**: `ENTRYPOINT` for CLI apps, `CMD` for default arguments
-    - **Volume mounting**: `-v host_path:container_path` to share files with containers
-    - **ML training pattern**: Mount config/data in, mount results out, keep image unchanged
-    - **Packaging CLI tools**: Distribute complete environments as Docker images
+    - **ENTRYPOINT vs CMD**: `ENTRYPOINT` for CLI apps that accept arguments
+    - **Volume mounting**: `-v host_path:container_path` connects local folders to containers
+    - **Path distinction**: Host paths for `-v`, container paths for your CLI
+    - **ML training pattern**: Mount config/data in, mount outputs out, keep image unchanged
 
 ## 4. Containers Registry
 
