@@ -1,0 +1,416 @@
+# GCP Compute Workflow
+
+## 0. Overview
+
+!!! abstract
+    In this hands-on, you will learn a core data science workflow: offloading compute-intensive
+    training to a cloud VM while keeping your development environment lightweight.
+
+    You will:
+
+    - Create a Deep Learning VM on Google Compute Engine
+    - Run PyTorch training remotely via SSH
+    - Upload results to Google Cloud Storage
+    - Pull results back to your Codespace for analysis
+
+!!! warning "Cost Warning"
+    GCP resources cost money. A `n1-standard-2` VM costs ~$0.10/hour.
+
+    **CRITICAL:** Always verify training is complete before deleting your VM, then delete it immediately.
+    Leaving a VM running overnight wastes money and your free credits.
+
+!!! tip
+    When replacing `{something}` in commands, don't include the brackets.
+    Write `yourname`, not `{yourname}`.
+
+### The Problem
+
+Your GitHub Codespace has 2 CPU cores and 8GB RAM. You need to train a CNN on MNIST - doable locally, but imagine this was a ResNet on ImageNet. How do data scientists handle compute-intensive training when their laptop or dev environment isn't enough?
+
+**The solution:** Offload training to a cloud VM, save results to cloud storage, pull back for analysis.
+
+### The Workflow
+
+```
+┌─────────────────┐         ┌─────────────────┐         ┌─────────────────┐
+│    CODESPACE    │         │    GCE VM       │         │      GCS        │
+│  (your laptop)  │         │ (training box)  │         │ (cloud storage) │
+└────────┬────────┘         └────────┬────────┘         └────────┬────────┘
+         │                           │                           │
+         │  1. Create VM             │                           │
+         │ ─────────────────────────>│                           │
+         │                           │                           │
+         │  2. SSH + run training    │                           │
+         │ ─────────────────────────>│                           │
+         │                           │  3. Upload model+metrics  │
+         │                           │ ─────────────────────────>│
+         │                           │                           │
+         │  4. Delete VM             │                           │
+         │ ─────────────────────────>│                           │
+         │                           │                           │
+         │  5. Pull results from GCS                             │
+         │ <─────────────────────────────────────────────────────│
+         │                           │                           │
+         │  6. Analyze in Jupyter    │                           │
+         ▼                           │                           │
+   ┌──────────┐                      │                           │
+   │ Notebook │                      │                           │
+   └──────────┘                      │                           │
+```
+
+### Prerequisites
+
+Before starting, you should have:
+
+- Completed the [GCP Hands-on](1_2d_handson_gcp.md) (gcloud configured, project access)
+- Access to the GitHub Codespace
+
+---
+
+## 1. Key Concepts
+
+Before diving in, let's understand the two GCP services we'll use.
+
+!!! info "What is Google Compute Engine (GCE)?"
+    **Google Compute Engine (GCE)** is GCP's virtual machine service. You can:
+
+    - Create VMs with specific CPU, RAM, and disk configurations
+    - Choose from pre-built images (including Deep Learning VMs with PyTorch pre-installed)
+    - Pay only for the time the VM is running (billed per second)
+    - Access VMs via SSH from anywhere
+
+    Think of it as renting a computer in Google's data center. You control it entirely,
+    but Google handles the physical hardware, networking, and maintenance.
+
+    **Key difference from your laptop:** GCE VMs are *ephemeral*—designed to be created,
+    used, and deleted. Don't treat them as permanent storage.
+
+!!! info "What is Google Cloud Storage (GCS)?"
+    **Google Cloud Storage (GCS)** is GCP's object storage service. You can:
+
+    - Store any file (models, datasets, logs) in "buckets"
+    - Access files from anywhere (VMs, your laptop, other GCP services)
+    - Pay only for storage used and data transferred
+    - Files persist until you delete them—independent of any VM
+
+    Think of it as a cloud hard drive with unlimited capacity. Unlike a VM's disk,
+    GCS data survives VM deletion.
+
+    **Why use GCS for ML?** Your trained model and metrics live in GCS, so you can
+    delete the expensive VM immediately after training and still have all your results.
+
+---
+
+## 2. Setup
+
+### Set Environment Variables
+
+First, configure your environment with a unique run identifier:
+
+```bash
+# Project and shared bucket (already created by instructor)
+export PROJECT_ID=$(gcloud config get-value project 2> /dev/null)
+export GCS_BUCKET="gs://isae-sdd-de-2526"
+
+# Unique run identifier: username + timestamp
+export RUN_ID="${USER}-$(date +%Y%m%d-%H%M%S)"
+export INSTANCE_NAME="training-vm-${RUN_ID}"
+export GCS_OUTPUT="${GCS_BUCKET}/runs/${RUN_ID}"
+
+# Display configuration
+echo "Project: ${PROJECT_ID}"
+echo "Run ID: ${RUN_ID}"
+echo "Results will be saved to: ${GCS_OUTPUT}"
+```
+
+### Verify Bucket Access
+
+The shared bucket is pre-created by the instructor. Verify you can access it:
+
+```bash
+# The bucket already exists - verify you can access it
+gcloud storage ls ${GCS_BUCKET}
+```
+
+!!! success "Checkpoint 1"
+    You should see the bucket contents listed (may be empty or have other students' runs).
+    If you get a permission error, check with the instructor.
+
+---
+
+## 3. Create VM and Run Training
+
+### Create the Deep Learning VM
+
+```bash
+gcloud compute instances create ${INSTANCE_NAME} \
+    --zone=europe-west1-b \
+    --image-family=pytorch-latest-cpu \
+    --image-project=deeplearning-platform-release \
+    --machine-type=n1-standard-2 \
+    --scopes=storage-rw \
+    --boot-disk-size=50GB
+```
+
+**Key flags explained:**
+
+| Flag | Purpose |
+|------|---------|
+| `--image-family=pytorch-latest-cpu` | Pre-installed PyTorch, no GPU needed |
+| `--scopes=storage-rw` | VM can write to GCS without extra auth |
+| `--machine-type=n1-standard-2` | 2 vCPUs, 7.5 GB RAM |
+
+!!! success "Checkpoint 2"
+    VM creation takes ~60 seconds. Run `gcloud compute instances list` - your VM should show `RUNNING` status.
+
+### Copy the Training Script
+
+```bash
+gcloud compute scp train.py ${INSTANCE_NAME}:~ --zone=europe-west1-b
+```
+
+### SSH into the VM and Run Training
+
+```bash
+gcloud compute ssh ${INSTANCE_NAME} --zone=europe-west1-b
+```
+
+Once inside the VM, run training with `nohup` to keep it running even if SSH disconnects:
+
+```bash
+# Use nohup to ensure training continues even if SSH disconnects
+nohup python train.py \
+    --epochs 5 \
+    --output-gcs ${GCS_OUTPUT} \
+    > training.log 2>&1 &
+
+# Monitor progress
+tail -f training.log
+# Press Ctrl+C to stop watching (training continues in background)
+```
+
+!!! tip "Why nohup?"
+    If your SSH connection drops (network hiccup, laptop sleeps), the training process continues.
+    Without nohup, a disconnection would kill your training mid-run.
+
+    For longer interactive sessions, you could also use [tmux](1_2d_handson_gcp.md#4e-persistent-ssh-sessions-with-tmux)
+    which you learned about earlier.
+
+!!! success "Checkpoint 3"
+    Training is complete when you see `Results uploaded to gs://...` in the log.
+    Exit SSH with `exit`.
+
+---
+
+## 4. Verify Completion, Cleanup & Retrieve Results
+
+### Verify Training Completed
+
+!!! danger "CRITICAL: Verify before deleting!"
+    Never delete your VM until you've confirmed results are in GCS.
+    Once deleted, any data on the VM is **gone forever**.
+
+From your Codespace (not the VM), check if results exist:
+
+```bash
+# Check if results exist in GCS (training script uploads on completion)
+gcloud storage ls ${GCS_OUTPUT}/metrics.json
+```
+
+If you see the file listed, training is complete. If you get "One or more URLs matched no objects", training is still running.
+
+**Wait for completion (if needed):**
+
+```bash
+# Poll until metrics.json appears (check every 30 seconds)
+while ! gcloud storage ls ${GCS_OUTPUT}/metrics.json 2>/dev/null; do
+    echo "$(date): Training still in progress..."
+    sleep 30
+done
+echo "Training complete! Results ready in ${GCS_OUTPUT}"
+```
+
+!!! success "Checkpoint 4a"
+    You should see `gs://isae-sdd-de-2526/runs/yourname-YYYYMMDD-HHMMSS/metrics.json` listed.
+
+### List All Results
+
+```bash
+gcloud storage ls ${GCS_OUTPUT}/
+```
+
+Expected output:
+```
+gs://isae-sdd-de-2526/runs/yourname-20260111-143052/model.pt
+gs://isae-sdd-de-2526/runs/yourname-20260111-143052/metrics.json
+```
+
+### Pull Results to Codespace
+
+```bash
+mkdir -p ./results/${RUN_ID}
+gcloud storage cp ${GCS_OUTPUT}/* ./results/${RUN_ID}/
+```
+
+!!! success "Checkpoint 5"
+    Run `ls ./results/${RUN_ID}/` - you should see `model.pt` and `metrics.json`.
+
+### Delete the VM
+
+**Only after verifying results are in GCS!**
+
+```bash
+gcloud compute instances delete ${INSTANCE_NAME} --zone=europe-west1-b --quiet
+```
+
+!!! success "Checkpoint 4b"
+    Run `gcloud compute instances list` - your VM should no longer appear.
+
+---
+
+## 5. Analyze Results in Jupyter
+
+Open the `analyze.ipynb` notebook in your Codespace.
+
+### Cell 1: Load Metrics
+
+```python
+import json
+import os
+import matplotlib.pyplot as plt
+
+# Find the most recent run (or specify RUN_ID manually)
+results_dir = "./results"
+runs = sorted(os.listdir(results_dir))
+run_id = runs[-1]  # Most recent run
+run_path = os.path.join(results_dir, run_id)
+print(f"Analyzing run: {run_id}")
+
+with open(os.path.join(run_path, "metrics.json")) as f:
+    metrics = json.load(f)
+
+print(f"Final accuracy: {metrics['test_accuracy'][-1]:.2f}%")
+print(f"Final loss: {metrics['test_loss'][-1]:.4f}")
+```
+
+### Cell 2: Plot Training Curves
+
+```python
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
+
+ax1.plot(metrics['epoch'], metrics['test_loss'])
+ax1.set_xlabel('Epoch')
+ax1.set_ylabel('Loss')
+ax1.set_title('Test Loss over Training')
+
+ax2.plot(metrics['epoch'], metrics['test_accuracy'])
+ax2.set_xlabel('Epoch')
+ax2.set_ylabel('Accuracy (%)')
+ax2.set_title('Test Accuracy over Training')
+
+plt.tight_layout()
+plt.savefig(os.path.join(run_path, 'training_curves.png'))
+plt.show()
+```
+
+### Cell 3: Inspect Model
+
+```python
+import torch
+model_state = torch.load(os.path.join(run_path, 'model.pt'), map_location='cpu')
+print(f"Model layers: {list(model_state.keys())}")
+print(f"Total parameters: {sum(p.numel() for p in model_state.values()):,}")
+```
+
+!!! success "Checkpoint 6 (Final)"
+    You should see training curves plotted and ~93-98% accuracy after 5 epochs.
+
+---
+
+## 6. What You Learned
+
+!!! success "Summary"
+    - **Deep Learning VMs**: Pre-configured GCE images with ML frameworks ready
+    - **Remote training pattern**: SSH → run → upload to GCS → delete VM
+    - **GCS as artifact storage**: Durable, accessible from anywhere, decoupled from compute
+    - **Cloud workflow**: Compute is ephemeral, storage is persistent
+
+---
+
+## 7. Bonus: Automation Script
+
+Every command you ran could be a script. Here's what a fully automated `train_remote.sh` looks like:
+
+```bash
+#!/bin/bash
+set -e  # Exit on any error
+
+# Configuration
+GCS_BUCKET="gs://isae-sdd-de-2526"
+RUN_ID="${USER}-$(date +%Y%m%d-%H%M%S)"
+INSTANCE_NAME="training-vm-${RUN_ID}"
+ZONE="europe-west1-b"
+GCS_OUTPUT="${GCS_BUCKET}/runs/${RUN_ID}"
+EPOCHS=${1:-5}  # Default 5 epochs, or pass as argument
+
+echo "==> Run ID: ${RUN_ID}"
+echo "==> Results will be saved to: ${GCS_OUTPUT}"
+
+echo "==> Creating VM ${INSTANCE_NAME}..."
+gcloud compute instances create ${INSTANCE_NAME} \
+    --zone=${ZONE} \
+    --image-family=pytorch-latest-cpu \
+    --image-project=deeplearning-platform-release \
+    --machine-type=n1-standard-2 \
+    --scopes=storage-rw \
+    --boot-disk-size=50GB
+
+# Wait for SSH to become available (more reliable than sleep)
+echo "==> Waiting for SSH to become available..."
+until gcloud compute ssh ${INSTANCE_NAME} --zone=${ZONE} --command="echo ready" 2>/dev/null; do
+    echo "    Waiting for VM..."
+    sleep 5
+done
+
+echo "==> Copying training script..."
+gcloud compute scp train.py ${INSTANCE_NAME}:~ --zone=${ZONE}
+
+echo "==> Starting training in background..."
+gcloud compute ssh ${INSTANCE_NAME} --zone=${ZONE} --command \
+    "nohup python train.py --epochs ${EPOCHS} --output-gcs ${GCS_OUTPUT} > training.log 2>&1 &"
+
+# Poll for completion by checking if metrics.json exists in GCS
+echo "==> Waiting for training to complete..."
+while ! gcloud storage ls ${GCS_OUTPUT}/metrics.json &> /dev/null; do
+    echo "    $(date): Training in progress..."
+    sleep 30
+done
+
+echo "==> Training complete! Deleting VM..."
+gcloud compute instances delete ${INSTANCE_NAME} --zone=${ZONE} --quiet
+
+echo "==> Done! Results at ${GCS_OUTPUT}"
+echo "==> Download with: gcloud storage cp ${GCS_OUTPUT}/* ./results/${RUN_ID}/"
+```
+
+Now launching a training run is one command:
+
+```bash
+./train_remote.sh 10  # Train for 10 epochs
+```
+
+This is how reproducible ML pipelines start. Tools like **Terraform** and **Pulumi** formalize this further, letting you version control your infrastructure alongside your code.
+
+---
+
+## 8. Looking Ahead: MLOps
+
+You just did manually what MLOps platforms automate:
+
+| What You Did | Production Tools |
+|--------------|------------------|
+| Create VM, run training | **Vertex AI** (GCP), **SageMaker** (AWS) |
+| Track metrics.json | **MLflow**, **Weights & Biases** |
+| Script the workflow | **Kubeflow**, **Airflow** |
+
+The pattern you learned is the foundation—cloud platforms add automation on top.
