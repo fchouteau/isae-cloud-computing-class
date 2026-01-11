@@ -1,6 +1,6 @@
-# Remote Development hands-on
+# Remote Development Hands-on
 
-## 1. Abstract
+## 0. Abstract
 
 !!! abstract
     In this hands-on, you will use a GitHub Codespace remote development environment to get familiar with working on code and data not stored on your computer.
@@ -13,8 +13,9 @@
 !!! warning
     Don't forget to shut down everything when you're done!
 
-!!! note
-    When the TP says to replace "{something}" with a name, don't include the brackets so write “yourname"
+!!! tip
+    When replacing `{something}` in commands, don't include the brackets.
+    Write `yourname`, not `{yourname}`.
 
 ## 1. My first "Virtual Machine": GitHub Codespaces
 
@@ -167,61 +168,24 @@ Run these commands to get a feel for the "computer" behind the interface:
 
 * Create a new file and write a simple python "Hello World", then execute it from the terminal
 
-### Understanding Ports and Port Forwarding
+### A quick look at port forwarding
 
-??? info "What is a port?"
-    A **port** is a 16-bit number (0-65535) that identifies a specific process or service on a machine. Think of it like apartment numbers in a building:
+When you run a server on a remote machine (like this Codespace), you need a way to access it from your browser. This is called **port forwarding** - we'll explore this in detail in Section 3 with Streamlit.
 
-    - The IP address is the building address
-    - The port is the apartment number
-
-    **Common ports:**
-
-    | Port | Service |
-    |------|---------|
-    | 22 | SSH |
-    | 80 | HTTP (web) |
-    | 443 | HTTPS (secure web) |
-    | 8888 | Jupyter (default) |
-    | 8501 | Streamlit (default) |
-
-    When you run `jupyter lab`, it starts a web server listening on port 8888. Anyone who can reach that port can access Jupyter.
-
-??? info "What is port forwarding?"
-    **Port forwarding** (or tunneling) connects a port on one machine to a port on another through a secure channel.
-
-    ```
-    Your laptop:8888  <--tunnel-->  Remote VM:8888
-    ```
-
-    When you access `localhost:8888` on your laptop, the traffic is forwarded through the tunnel to port 8888 on the remote machine.
-
-    **Why is this useful?**
-
-    - The remote machine might not be directly accessible from the internet
-    - You want to access services as if they were running locally
-    - Security: the tunnel encrypts traffic
-
-### A demo of codespace port forwarding / web preview
+For now, try this quick demo:
 
 * In your codespace, run `jupyter lab` to launch Jupyter Lab
-* Check the "Ports" tab in VS Code: it should show a new entry for port 8888. If not, add it manually
-* Click "Open in Browser"
-* Copy the token from your terminal to the browser
-* You are now in a Jupyter Lab instance hosted on your GitHub Codespace VM!
-
-!!! question
-    How do you think this works? Try to describe it in your own words.
-
+* Check the "Ports" tab in VS Code: it should show a new entry for port 8888
+* Click "Open in Browser" to see how Codespace automatically forwards the port
 * Cancel the Jupyter process with `CTRL+C`
 
-To learn more about port forwarding in codespaces, refer to the [documentation](https://docs.github.com/en/codespaces/developing-in-codespaces/forwarding-ports-in-your-codespace)
+We'll dive deeper into how port forwarding works in the Streamlit section below.
 
-!!! success "What you learned in this section"
+!!! success "What You Learned"
     - **Remote development environments**: Codespaces provide a cloud-hosted VM with pre-configured tools
     - **VS Code in the browser**: The same IDE experience, but running remotely
-    - **Port forwarding**: Access services running on remote machines as if they were local
     - **System exploration**: Commands like `df -h`, `htop`, `cat /proc/cpuinfo` to understand your environment
+    - **Port forwarding preview**: A glimpse of how to access remote services (more in Section 3)
 
 ## 2. Running a ML training script in the Codespace
 
@@ -292,26 +256,16 @@ gh codespace cp remote:/workspaces/isae-cloud-computing-codespace/training/model
 !!! question
     How comfortable do you feel with this remote machine? Is it easy to get data in or out? Code in or out?
 
-!!! success "What you learned in this section"
+!!! success "What You Learned"
     - **Remote computation**: Running code on a cloud machine instead of your laptop
     - **File transfer**: Moving files between local and remote environments
     - **The cloud workflow**: Edit locally (or remotely), run remotely, retrieve results
 
-## 3. (Optional) Building a webapp
-
-!!! note "Preview for Day 2"
-    This section is a **preview** of what you'll do in Day 2 when we cover **deployment**.
-
-    It's useful to do now because it lets you explore:
-
-    - **Port forwarding**: How to access a web app running on a remote machine from your browser
-    - **Web app deployment basics**: Running a server and exposing it to users
-
-    If you're short on time, you can skip this section and come back to it later.
+## 3. Building a Streamlit Webapp
 
 We will introduce **Streamlit**, a Python library to build quick web apps for data science.
 
-In this section, you will build your first interactive webapp in Python and preview it using Codespace's port forwarding feature.
+In this section, you will build your first interactive webapp in Python and learn about **port forwarding** - how to access applications running on remote machines from your browser. This is a fundamental concept for cloud development.
 
 First, watch this video:
 
@@ -382,6 +336,39 @@ image_comparison(
 
 ### 3.2. Running Streamlit in the Codespace
 
+??? info "What is a port?"
+    A **port** is a 16-bit number (0-65535) that identifies a specific process or service on a machine. Think of it like apartment numbers in a building:
+
+    - The IP address is the building address
+    - The port is the apartment number
+
+    **Common ports:**
+
+    | Port | Service |
+    |------|---------|
+    | 22 | SSH |
+    | 80 | HTTP (web) |
+    | 443 | HTTPS (secure web) |
+    | 8888 | Jupyter (default) |
+    | 8501 | Streamlit (default) |
+
+    When you run `jupyter lab`, it starts a web server listening on port 8888. Anyone who can reach that port can access Jupyter.
+
+??? info "What is port forwarding?"
+    **Port forwarding** (or tunneling) connects a port on one machine to a port on another through a secure channel.
+
+    ```
+    Your laptop:8888  <--tunnel-->  Remote VM:8888
+    ```
+
+    When you access `localhost:8888` on your laptop, the traffic is forwarded through the tunnel to port 8888 on the remote machine.
+
+    **Why is this useful?**
+
+    - The remote machine might not be directly accessible from the internet
+    - You want to access services as if they were running locally
+    - Security: the tunnel encrypts traffic
+
 Install the dependencies:
 
 ```bash
@@ -413,7 +400,7 @@ This will launch the application on **port 8501** of your Codespace.
 
 Once you're done exploring, quit the server with `CTRL+C`.
 
-!!! success "What you learned"
+!!! success "What You Learned"
     - **Port forwarding**: Accessing a remote service through a tunnel
     - **Web app basics**: A Python process serving HTTP on a port
     - **Deployment preview**: In Day 2, you'll deploy apps like this to the cloud

@@ -1,4 +1,4 @@
-# GCP Compute Workflow
+# GCP Compute Workflow Hands-on
 
 ## 0. Overview
 
@@ -57,6 +57,10 @@ Your GitHub Codespace has 2 CPU cores and 8GB RAM. You need to train a CNN on MN
    │ Notebook │                      │                           │
    └──────────┘                      │                           │
 ```
+
+Here's the same workflow as a diagram:
+
+![GCE Workflow](slides/static/img/gce_workflow.png)
 
 ### Prerequisites
 
@@ -327,9 +331,9 @@ print(f"Total parameters: {sum(p.numel() for p in model_state.values()):,}")
 
 ---
 
-## 6. What You Learned
+## 6. Summary
 
-!!! success "Summary"
+!!! success "What You Learned"
     - **Deep Learning VMs**: Pre-configured GCE images with ML frameworks ready
     - **Remote training pattern**: SSH → run → upload to GCS → delete VM
     - **GCS as artifact storage**: Durable, accessible from anywhere, decoupled from compute

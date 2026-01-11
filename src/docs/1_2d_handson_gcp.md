@@ -5,17 +5,17 @@
 !!! abstract
     In this hands-on, you will configure your GCP account and the Google Cloud SDK.
     You will create and manage Compute Engine VMs, learn to transfer files, and
-    interact with Cloud Storage. Finally, you'll run a complete ML workflow using
-    a Deep Learning VM.
+    interact with Cloud Storage.
 
 !!! warning
     Some things may only work on **eduroam** or in 4G...
 
 !!! warning
-    Don't forget to shutdown everything when you're done since it costs you money. At the end, even if you have not finished the TP, go to the section 8 "Cleaning Up"
+    Don't forget to shutdown everything when you're done since it costs you money. At the end, even if you have not finished the TP, go to Section 7 "Cleaning Up"
 
 !!! tip
-    When the TP says to replace "{something}" with a name, don't include the brackets so write “yourname"
+    When replacing `{something}` in commands, don't include the brackets.
+    Write `yourname`, not `{yourname}`.
 
 !!! tip
     If you are lost on where you are, normally the terminal has the hostname indicated, otherwise run the command `hostname`
@@ -23,13 +23,13 @@
 !!! danger "Cost Warning"
     GCP resources cost money. Even with free credits:
 
-    - **Always delete VMs** when done (Section 8)
+    - **Always delete VMs** when done (Section 7)
     - **Delete buckets** you create
     - **Stop your Codespace** when finished
 
     Forgot to clean up? Your credits will drain quickly.
 
-    If you reach the end of the class without having finished everything, go to the cleaning section 9 at the end.
+    If you reach the end of the class without having finished everything, go to the cleaning Section 7 at the end.
 
 ## 1. Create your GCP Account
 
@@ -233,7 +233,7 @@ See section 5.
 
 Congratulations :)
 
-!!! success "What you learned in this section"
+!!! success "What You Learned"
     - **VM creation**: Using both the Console (GUI) and CLI to create compute instances
     - **SSH access**: Connecting to remote VMs with `gcloud compute ssh`
     - **Cloud elasticity**: Resizing VMs on-the-fly (more CPU/RAM without losing data)
@@ -305,171 +305,36 @@ gcloud storage cp gs://your-bucket-name/remote-file.txt ./
 
 * You can delete the VM as well, we will not use it
 
-!!! success "What you learned in this section"
+!!! success "What You Learned"
     - **Object storage vs file storage**: Buckets contain objects (files), accessed via URLs
     - **Cloud Storage CLI**: Using `gcloud storage ls`, `cp` for uploads/downloads
     - **Access scopes**: VMs need explicit permissions to access other GCP services
     - **Data pipeline pattern**: Upload data to storage, process on VMs, store results back
 
-## 6. End-to-End Example
+## 6. End-to-End Example (Preview)
 
-!!! tip "Learning objectives"
-    - Combine all skills: VMs, SSH, file transfer, Cloud Storage
-    - Run an ML training job on a remote machine
-    - Transfer artifacts (model weights) via Cloud Storage
+!!! tip "What you'll learn on Day 2"
+    In the next session, you'll combine all these skills into a complete ML workflow:
 
-We will replicate the following setup (simplified):
+    - Transfer training code to a VM
+    - Run ML training on remote hardware
+    - Upload model weights to Cloud Storage
+    - Download results to your development machine
+
+Here's the workflow you'll implement:
 
 ![setup](slides/static/img/gce_workflow.png)
 
-- Your development machine (the GitHub Codespace) has some training code
-- You have a "high performance" machine in the cloud
-- You want to transfer the training code to the VM
-- You want to run the training on a remote machine
-- Once the training is done you want to upload the model weights to Google Cloud Storage
+This pattern—**compute on VMs, store on GCS, develop locally**—is how real ML teams work. You now have all the building blocks; Day 2 puts them together.
 
-* In your codespace, in a new folder (eg. `training`), copy the content of [this](https://github.com/pytorch/examples/tree/main/mnist)
+!!! success "What You Learned"
+    - **VM lifecycle**: Create, use, resize, delete cloud resources on-demand
+    - **SSH access**: Connect to remote machines with `gcloud compute ssh`
+    - **File transfer**: Move data with `gcloud compute scp`
+    - **Cloud Storage**: Durable object storage accessible from anywhere
+    - **tmux**: Keep processes running after disconnection
 
-??? solution
-    `gcloud compute scp --recurse training ${USER}@{MACHINE}:/home/${USER}/`
-
-You should find it on your GCE VM
-
-* Run it using `python train.py --epochs 1 --save-model`. 
-
-It should train a neural network on the MNIST dataset. BONUS : Run it inside a tmux session ;)
-
-* Once it has finished, you should see a new file, the model weights `mnist_cnn.pt`
-
-* From the GCE VM: Upload the weights to the Google Cloud Storage bucket you previously created
-
-??? solution
-    `gcloud storage cp mnist_cnn.pt gs://(...)`
-
-* From the GitHub Codespace: Download the model weights from Google Cloud Storage
-
-??? solution
-    `gcloud storage cp gs://(...) mnist_cnn.pt`
-
-!!! success "What you learned in this section"
-    - **End-to-end ML workflow**: Code → Remote execution → Artifact storage → Retrieval
-    - **Cloud Storage as artifact store**: Central location for model weights and data
-    - **Combining skills**: SSH, file transfer, and storage work together
-    - **Production patterns**: This is how real ML pipelines operate at scale
-
-## 7. Optional – Deep Learning VM, SSH and Port Forwarding
-
-!!! tip "Learning objectives"
-    - Understand pre-configured VM images (Deep Learning VMs)
-    - Create VMs using the `gcloud` CLI instead of the Console
-    - Use SSH port forwarding to access remote Jupyter servers
-    - Understand the double tunneling: Codespace → GCE VM
-
-### 7a. Deep Learning VM
-
-Here we will use the Google Cloud SDK to create a more complex VM with a pre-installed image and connect to its Jupyter server.
-
-Google Cloud Platform comes with a set of services targeted at data scientists called [Vertex AI](https://cloud.google.com/vertex-ai), among them are [Deep Learning VMs](https://cloud.google.com/deep-learning-vm/docs) which are VMs pre-installed with ML frameworks (TensorFlow, PyTorch, etc.) and Jupyter.
-
-* What are "Deep Learning VMs" ? Try to use your own words
-* What would be the alternative if you wanted to get a machine with the same installation ?
-
-### 7b. create a google compute engine instance using the command line
-
-Instead of using the browser to create this machine, we will be using the [CLI to create instances](https://cloud.google.com/deep-learning-vm/docs/cli)
-
-```bash
-export INSTANCE_NAME="yourname-dlvm" # <--- RENAME THIS !!!!!!!!!!
-
-gcloud compute instances create $INSTANCE_NAME \
-        --zone="europe-west9-a" \
-        --image-family="common-cpu-debian-11" \
-        --image-project="ml-images" \
-        --maintenance-policy="TERMINATE" \
-        --scopes="storage-rw" \
-        --machine-type="e2-standard-2" \
-        --boot-disk-size="50GB" \
-        --boot-disk-type="pd-standard"
-```
-
-* Notice the similarities between the first VM you created and this one,
-* What changed ?
-* If you want to learn more about compute images, image families, etc., [go here](https://cloud.google.com/deep-learning-vm/docs/images)
-
-### 7c. connect with ssh to this machine with port forwarding
-
-* Connect to your instance using the gcloud cli & ssh from the codespace with port forwarding
-
-* Forward the port 8888 when you're connecting to the instance
-
-* Documentation on [port forwarding](https://cloud.google.com/deep-learning-vm/docs/jupyter) as well
-
-??? solution
-    `gcloud compute ssh $INSTANCE_NAME --zone=europe-west9-a -- -L 8888:localhost:8888`
-
-If you are in codespace, use the port forwarding utility, add a new port (8888). It may be done automatically.
-
-* Explore the machine the same way we did previously
-
-* You can see you have a conda environment installed. Try to query the list of things installed
-
-??? solution
-    `conda list`
-    `pip list`
-
-* is (py)torch installed ? If not, install it
-
-??? solution
-    `pip list | grep torch`
-    `pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu`
-
-### 7d. Run jupyter lab on the GCE VM
-
-* In the GCE VM, run `jupyter lab`
-
-* Copy the credentials
-
-* Connect to the port 8888 of the GitHub CodeSpace. You should be redirected to a jupyter instance
-
-!!! question
-    Where are we ? Where is the jupyter lab hosted ?
-    What is the difference between this and the jupyter lab we launched from codespace last week ?
-
-![tunnels](slides/static/img/codespaceception.png)
-
-Don't disconnect from the VM, we will continue below
-
-!!! success "What you learned in this section"
-    - **Pre-configured images**: Deep Learning VMs come with ML frameworks pre-installed
-    - **CLI-based provisioning**: Creating VMs with `gcloud compute instances create`
-    - **SSH port forwarding**: The `-L 8888:localhost:8888` pattern to tunnel services
-    - **Double tunneling**: Codespace → GCE VM chain for accessing remote Jupyter
-
-## 8. Optional - Introduction to Infrastructure as Code
-
-!!! tip "Learning objectives"
-    - Understand the concept of Infrastructure as Code (IaC)
-    - Learn about declarative infrastructure definitions
-    - See how to automate cloud resource provisioning
-
-So far, you have been creating VMs manually (via Console or CLI). In production environments, infrastructure is defined in **configuration files** that can be versioned and automated.
-
-[This tutorial](https://cloud.google.com/deployment-manager/docs/quickstart) will guide you through Google Cloud Deployment Manager, which is a way to deploy Google Compute Engine instances using configuration files.
-
-!!! note "Modern alternatives"
-    Google Cloud Deployment Manager is GCP-specific. In practice, many teams use **Terraform** which works across all cloud providers (AWS, Azure, GCP).
-
-* Don't forget to adapt machine configurations and zone to your use case (see above)
-
-If you run this, **don't forget to clean everything up afterwards!**
-
-!!! success "What you learned in this section"
-    - **Infrastructure as Code (IaC)**: Define infrastructure in version-controlled config files
-    - **Reproducibility**: Same config = same infrastructure, every time
-    - **Automation**: No more clicking through UIs for repetitive tasks
-    - **Industry tools**: Deployment Manager (GCP), Terraform (multi-cloud)
-
-## 9. IMPORTANT: Cleaning up
+## 7. IMPORTANT: Cleaning up
 
 !!! warning
     * **DELETE ALL THE BUCKETS YOU CREATED**
@@ -483,7 +348,20 @@ How to shutdown Codespaces:
 - Click on "Stop codespace" to shut it down (you "pay" for the disk with your free credits)
 - Click on "Delete" to remove it completely
 
-## 10. Optional - Managed Database
+## 8. Advanced - Infrastructure as Code
+
+So far, you have been creating VMs manually (via Console or CLI). In production environments, infrastructure is defined in **configuration files** that can be versioned and automated.
+
+[This tutorial](https://cloud.google.com/deployment-manager/docs/quickstart) will guide you through Google Cloud Deployment Manager, which is a way to deploy Google Compute Engine instances using configuration files.
+
+!!! note "Modern alternatives"
+    Google Cloud Deployment Manager is GCP-specific. In practice, many teams use **Terraform** which works across all cloud providers (AWS, Azure, GCP).
+
+* Don't forget to adapt machine configurations and zone to your use case (see above)
+
+If you run this, **don't forget to clean everything up afterwards!**
+
+## 9. Advanced - Managed Databases
 
 * You have just completed a class on SQL databases
 
@@ -495,4 +373,19 @@ How to shutdown Codespaces:
     What is a "managed service" in cloud vocabulary?
 
 * If you still have some code to interact with a database, you can try launching one here and redoing your exercises
+
+## 10. Advanced - Deep Learning VMs
+
+Google Cloud offers **Deep Learning VMs**—pre-configured VM images with ML frameworks (PyTorch, TensorFlow) and Jupyter pre-installed.
+
+Instead of installing dependencies manually, you can create a VM from these images:
+
+```bash
+gcloud compute instances create my-dlvm \
+    --image-family=pytorch-latest-cpu \
+    --image-project=deeplearning-platform-release \
+    --machine-type=n1-standard-2
+```
+
+You'll use this approach in Day 2's workflow exercise. For more details: [Deep Learning VM documentation](https://cloud.google.com/deep-learning-vm/docs).
 

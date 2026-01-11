@@ -1,14 +1,13 @@
-# Docker: Hands on
+# Docker Hands-on
 
 !!! note
+    If you are lost, `docker system prune` will remove dangling images and stopped containers.
 
-    If you are lost, `docker system prune` will remove dangling images and stopped containers 
-
-## 0. How to run this ?
+## 0. Abstract
 
 !!! abstract
-
-    We will discover the basics of docker and you will be able to manipulate your first images and containers !
+    In this hands-on, you will discover the basics of Docker and learn to manipulate
+    images and containers.
 
 You should be inside the Github Codespace you created and have google cloud SDK installed in it
 
@@ -120,7 +119,7 @@ In the last section, you saw a lot of Docker-specific jargon which might be conf
 * *Docker client* - The command line tool that allows the user to interact with the Docker daemon.
 * *Docker Hub* - A [registry](https://hub.docker.com/) of Docker images, where you can find trusted and enterprise ready containers, plugins, and Docker editions. You'll be using this later in this tutorial.
 
-!!! success "What you learned in this section"
+!!! success "What You Learned"
     - **docker pull**: Download images from a registry (Docker Hub)
     - **docker run**: Create and start a container from an image
     - **docker ps**: List running containers (`-a` for all, including stopped)
@@ -539,95 +538,18 @@ publishing ports by means of the `-p` flag when using `$ docker run`.
 
 >**Note:** If you want to learn more about Dockerfiles, check out [Best practices for writing Dockerfiles](https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/).
 
-### 2.3.6 Docker build context and .dockerignore
+### 2.3.6 Build context
 
-When you run `docker build`, Docker sends all files in the current directory (the **build context**) to the Docker daemon. This can slow down builds and bloat your image if unnecessary files are included.
-
-#### The build context
-
-The build context is everything in the directory you specify when running `docker build`. For example:
-
-```bash
-docker build -t myapp:1.0 .
-```
-
-The `.` means "use the current directory as the build context". Docker will send all files in this directory to the daemon, which can be slow if you have large files (datasets, model weights, etc.).
-
-#### Using .dockerignore
-
-Create a `.dockerignore` file to exclude files from the build context. This works like `.gitignore`:
-
-```
-# .dockerignore example
-.git
-__pycache__
-*.pyc
-.env
-data/
-models/
-*.tar.gz
-node_modules/
-.vscode/
-```
+When you run `docker build`, Docker sends all files in the current directory to the Docker daemon. This is called the **build context**. Keep your build directory clean to speed up builds.
 
 !!! tip
-    Always create a `.dockerignore` file in your project. It speeds up builds and prevents accidentally including sensitive files (like `.env` with secrets) in your image.
+    For details on excluding files with `.dockerignore`, see the Advanced section at the end.
 
-### 2.3.7 Debugging containers
-
-When things go wrong, these commands will help you troubleshoot:
-
-#### View container logs
-
-```bash
-# See logs from a running or stopped container
-docker logs <container-name-or-id>
-
-# Follow logs in real-time (like tail -f)
-docker logs -f <container-name-or-id>
-
-# Show only the last 100 lines
-docker logs --tail 100 <container-name-or-id>
-```
-
-#### Get a shell inside a running container
-
-```bash
-# Open an interactive shell in a running container
-docker exec -it <container-name-or-id> /bin/sh
-
-# Or use bash if available
-docker exec -it <container-name-or-id> /bin/bash
-```
-
-#### Inspect container details
-
-```bash
-# See detailed container configuration (ports, volumes, env vars, etc.)
-docker inspect <container-name-or-id>
-
-# See resource usage (CPU, memory)
-docker stats <container-name-or-id>
-```
-
-#### Debug a failed build
-
-If your build fails, you can run a container from the last successful layer:
-
-```bash
-# Find the last successful layer ID in the build output, then:
-docker run -it <layer-id> /bin/sh
-```
-
-!!! note
-    These debugging skills are essential when deploying ML models. Container logs are often the first place to check when a model serving endpoint fails.
-
-!!! success "What you learned in this section"
+!!! success "What You Learned"
     - **Running web apps**: Use `-d` for detached mode, `-p host:container` for port mapping
     - **Building images**: Write a `Dockerfile`, then `docker build -t name:tag .`
     - **Dockerfile instructions**: `FROM`, `RUN`, `COPY`, `EXPOSE`, `CMD` and their purposes
     - **Build context & .dockerignore**: Control what gets sent to the Docker daemon
-    - **Debugging**: `docker logs`, `docker exec -it`, `docker inspect` for troubleshooting
 
 ## 3. Running CLI Apps with Docker: Passing Data at Runtime
 
@@ -792,7 +714,7 @@ docker run --rm \
 | Changes don't appear on host | Volume not mounted | Check `-v` syntax is `host:container`, not reversed |
 | Permission denied | Host dir permissions | Run `chmod -R 755 ./outputs` or check file ownership |
 
-!!! success "What you learned in this section"
+!!! success "What You Learned"
     - **ENTRYPOINT vs CMD**: `ENTRYPOINT` for CLI apps that accept arguments
     - **Volume mounting**: `-v host_path:container_path` connects local folders to containers
     - **Path distinction**: Host paths for `-v`, container paths for your CLI
@@ -832,124 +754,181 @@ We will follow [this tutorial](https://cloud.google.com/artifact-registry/docs/d
 
 * Go to your artifact registry [https://console.cloud.google.com/artifacts](https://console.cloud.google.com/artifacts), you should see your docker image :)
 
-!!! success "What you learned in this section"
+!!! success "What You Learned"
     - **Container registries**: Central storage for Docker images (like GitHub for code)
     - **Docker Hub vs private registries**: Public images vs organization-private images
     - **GCP Artifact Registry**: Google's managed container registry service
     - **Tag and push workflow**: `docker tag` to rename, `docker push` to upload
     - **Image naming convention**: `registry/project/image:tag` format
 
-## 5. Bonus. Data Science Standardized Environment and mounting volumes
+---
 
-Note : This may not run in your native github codespace due to the storage available. If you encounter a storage error, run `docker system prune` to cleanup everything
+## What You've Learned
 
-The purpose of this tutorial is to reproduce a sort of google colab environment using docker and github codespace.
+!!! success "Core Docker Skills"
+    You now know how to:
 
-### 5.1 Intro
+    - **Pull and run** containers from Docker Hub
+    - **Build custom images** with Dockerfiles
+    - **Mount volumes** to pass data at runtime
+    - **Push images** to a container registry
 
-Those of us who work on a team know how hard it is to create a standardize development environment. Or if you have ever updated a dependency and had everything break, you understand the importance of keeping development environments isolated.
+## What's Next
 
-Using Docker, we can create a project / team image with our development environment and mount a volume with our notebooks and data.
+In Day 2, you'll combine Docker with GCP to deploy containerized ML models to the cloud.
 
-The benefits of this workflow are that we can:
+---
 
-* Separate out projects
-* Spin up a container to onboard new employees
-* Build an automated testing pipeline to confirm upgrade dependencies do not break code
+*The following sections are **Advanced** - useful reference material that you can explore after completing the core content.*
 
-### 5.2 Jupyter Stack Docker Image
+---
 
-For this exercise we will use [Jupyter Stack Docker Image](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/running.html#) which is a fully configured docker image that can be used as a data science container
+## Advanced - Pre-built Data Science Environments
 
-Take a look at the documentation and [the dockerhub repository](https://hub.docker.com/r/jupyter/scipy-notebook/tags/)
+Docker images like [Jupyter Docker Stacks](https://jupyter-docker-stacks.readthedocs.io/en/latest/) provide fully configured data science environments. These images combine:
 
-To get the docker image, run
+- **Volume mounting**: Connect your local notebooks to the container
+- **Port forwarding**: Access Jupyter in your browser
 
+Example usage:
 ```bash
-docker pull jupyter/scipy-notebook:lab-3.5.3
+docker run --rm -p 8888:8888 -v $(pwd):/home/jovyan/work jupyter/scipy-notebook
 ```
 
-### 5.3 Get the algorithm in ML git in your Virtual Machine
+This pattern—pulling a pre-configured image and mounting your data—is useful for:
 
-* From your vm, run `git clone https://github.com/erachelson/MLclass.git`, this should setup your AML class inside your VM
+- Standardizing team development environments
+- Quickly onboarding new team members
+- Testing dependency upgrades without affecting your system
 
-### 5.4 Mounting volumes and ports
+!!! note
+    These images can be large (several GB). Try this at home rather than during class to avoid network congestion.
 
-Now let's run the image. This container has a Jupyter notebook accessible from port 8888, so we will need to map the host port 8888 to the container port 8888 using [port forwarding](https://docs.docker.com/config/containers/container-networking/).
+## Advanced - Docker Compose Preview
 
-We will also need to make available the notebooks on the VM to the container... we will [mount volumes](https://docs.docker.com/storage/volumes/). Your data is located in `/home/${USER}/MLClass` and we want to mount it in `/home/jovyan/work/MLClass`
+**Docker Compose** manages multi-container applications with a single YAML file. Instead of running multiple `docker run` commands, you define your entire stack in `docker-compose.yml`:
 
-```bash
-docker run --rm -it \
-  -p 8888:8888 \
-  -v /home/${USER}/MLclass:/home/jovyan/work/MLClass \
-  --workdir /home/jovyan/work \
-  jupyter/scipy-notebook:lab-3.5.3
+```yaml
+services:
+  web:
+    image: myapp:1.0
+    ports:
+      - "8080:5000"
+  redis:
+    image: redis:alpine
 ```
 
-Note: this image is large, delete it afterwards using `docker rmi`
+Then start everything with:
+```bash
+docker compose up
+```
 
-Options breakdown:
+You'll use Docker Compose on Day 2 when deploying a multi-container ML application (API backend + web frontend). For now, just know it exists.
 
-* `--rm` remove the container when we stop it
-* `-it` run the container in interactive mode
-* `-p` forward port from host:container
-* other: options from the kaggle container
+**Further reading:** [Docker Compose Getting Started](https://docs.docker.com/compose/gettingstarted/)
 
-You should now see a jupyter lab with mlclass accessible if you do another port mapping
+## Advanced - Cloud Build
 
-So to connect to the jupyter lab we mapped the ports local 8888 to vm 8888 and vm 8888 to docker 8888
+**Google Cloud Build** builds Docker images in the cloud, without needing Docker installed locally. This is useful for CI/CD pipelines.
 
-We also exposed the local disk to the container
+Instead of:
+```bash
+docker build -t myimage .
+docker push europe-docker.pkg.dev/...
+```
 
-!!! success "What you learned in this section"
-    - **Pre-built data science images**: Jupyter stacks provide ready-to-use ML environments
-    - **Combining port forwarding and volumes**: Access Jupyter while using local data
-    - **Double port mapping**: Codespace → VM → Container chain for remote access
+You run:
+```bash
+gcloud builds submit --tag europe-docker.pkg.dev/$PROJECT_ID/$REPO/myimage .
+```
 
-## 6. Bonus - Docker Compose
+Cloud Build pulls your code, builds the image on Google's infrastructure, and pushes to Artifact Registry automatically. You'll see this in action if you continue with GCP-based ML deployments.
 
-Docker Compose is used to manage applications and increase efficiency in container development. Configurations are defined in a single YAML file, making applications easy to build and scale. Docker Compose is often used to set up a local environment
-
-The tutorial below aims to introduce fundamental concepts of Docker Compose by guiding you through the development of a basic Python web application.
-
-Using the Flask framework, the application features a hit counter in Redis, providing a practical example of how Docker Compose can be applied in web development scenarios.
-
-The concepts demonstrated here should be understandable even if you're not familiar with Python.
-
-This is a non-normative example that just highlights the key things you can do with Compose.
-
-[https://docs.docker.com/compose/gettingstarted/](https://docs.docker.com/compose/gettingstarted/)
-
-You can find a more extensive example here : 
-
-<https://hackernoon.com/practical-introduction-to-docker-compose-d34e79c4c2b6>
-
-<https://github.com/docker/labs/blob/master/beginner/chapters/votingapp.md>
-
-!!! success "What you learned in this section"
-    - **Docker Compose**: Define multi-container apps in a single YAML file
-    - **Service orchestration**: Link containers (e.g., web app + database) together
-    - **Local development**: `docker compose up` to start your entire stack
-
-## 7. Bonus - Using Google Cloud Tools for Docker
-
-Using codespace, you should be able to do the Hello World Dockerfile exercise except that instead of using docker build you use Google Cloud Build
-
-Tutorial: <https://cloud.google.com/cloud-build/docs/quickstart-docker>
-
-Example command: `gcloud builds submit --tag europe-docker.pkg.dev/$PROJECT_ID/$REPO_ID/{image}:{tag} .`
-
-!!! help
-    to get your project id: `PROJECT_ID=$(gcloud config get-value project 2> /dev/null)`
-
-!!! example
-    Try to build the hello world app
-
-!!! success "What you learned in this section"
-    - **Cloud Build**: Build Docker images in the cloud without local Docker
-    - **Remote builds**: Useful when local resources are limited or for CI/CD pipelines
-
-## 8. Bonus - Going further
+## Advanced - Going Further
 
 <https://container.training/>
+
+## Advanced - Docker Build Context and .dockerignore
+
+When you run `docker build`, Docker sends all files in the current directory (the **build context**) to the Docker daemon. This can slow down builds and bloat your image if unnecessary files are included.
+
+### The build context
+
+The build context is everything in the directory you specify when running `docker build`. For example:
+
+```bash
+docker build -t myapp:1.0 .
+```
+
+The `.` means "use the current directory as the build context". Docker will send all files in this directory to the daemon, which can be slow if you have large files (datasets, model weights, etc.).
+
+### Using .dockerignore
+
+Create a `.dockerignore` file to exclude files from the build context. This works like `.gitignore`:
+
+```
+# .dockerignore example
+.git
+__pycache__
+*.pyc
+.env
+data/
+models/
+*.tar.gz
+node_modules/
+.vscode/
+```
+
+!!! tip
+    Always create a `.dockerignore` file in your project. It speeds up builds and prevents accidentally including sensitive files (like `.env` with secrets) in your image.
+
+## Troubleshooting
+
+### Debugging Containers
+
+When things go wrong, these commands will help you troubleshoot:
+
+#### View container logs
+
+```bash
+# See logs from a running or stopped container
+docker logs <container-name-or-id>
+
+# Follow logs in real-time (like tail -f)
+docker logs -f <container-name-or-id>
+
+# Show only the last 100 lines
+docker logs --tail 100 <container-name-or-id>
+```
+
+#### Get a shell inside a running container
+
+```bash
+# Open an interactive shell in a running container
+docker exec -it <container-name-or-id> /bin/sh
+
+# Or use bash if available
+docker exec -it <container-name-or-id> /bin/bash
+```
+
+#### Inspect container details
+
+```bash
+# See detailed container configuration (ports, volumes, env vars, etc.)
+docker inspect <container-name-or-id>
+
+# See resource usage (CPU, memory)
+docker stats <container-name-or-id>
+```
+
+#### Debug a failed build
+
+If your build fails, you can run a container from the last successful layer:
+
+```bash
+# Find the last successful layer ID in the build output, then:
+docker run -it <layer-id> /bin/sh
+```
+
+!!! note
+    These debugging skills are essential when deploying ML models. Container logs are often the first place to check when a model serving endpoint fails.
