@@ -1,50 +1,121 @@
 # Deploy your ML model into production
 
-## Objectifs
+## Objectives
 
-L'objectif du TP est de convertir [ce notebook](https://colab.research.google.com/drive/1YnJVW-IbMkUhl7s5nJ7BsT5tsTTvMmUB?usp=sharing) en deux services containerisés : 
+By the end of this workshop, you will be able to:
 
-- un back-end qui est un serveur qui reçoit des images et sort des prédictions, 
-- un front-end qui vous permet d'envoyer des images au modèle et d'afficher les prédictions sur lesdites images,
+1. **Explain APIs and microservices** - Understand what an API is and why we separate frontend from backend
+2. **Run multi-container applications** - Use docker-compose to orchestrate services locally
+3. **Deploy to Cloud Run** - Use the gcloud CLI to deploy a container with a public HTTPS URL
+4. **Connect distributed services** - Point a local frontend to a cloud-hosted backend API
 
-Afin de gagner du temps, les dockerfiles ont déjà été construits et sont prêts à être testés et déployés. Si vous souhaitez rentrer dans les détails et écrire vous-même le code, vous pouvez consulter la version longue de ce TP [ci-dessous](1_8_deployment_tp_long.md) (qui n'est pas à jour). 
+## Workshop Overview
 
-Nous allons donc voir :
+We will convert [this notebook](https://colab.research.google.com/drive/1YnJVW-IbMkUhl7s5nJ7BsT5tsTTvMmUB?usp=sharing) into two containerized services:
 
-- La création d'un docker "backend" qui contient le modèle derrière une "API"
-- L'interaction avec ce docker
-- La création d'un docker "frontend" qui contient une IHM permettant d'interagir plus facilement avec le backend
-- docker-compose pour lancer des applications multi-container
-- Le déploiement du backend sur GCP
-- Le test final
+- A **backend** server that receives images and returns YOLO object detection predictions
+- A **frontend** UI that lets you upload images and visualize the predictions
 
-Nous nous plaçons dans un contexte "microservices" où le front-end et le backend sont 2 containers différents. Il aurait été possible de n'en faire qu'un qui contient les deux (un "monolithe"). Une architecture microservices peut avoir certains avantages (modularité, maintenance) mais est plus complexe à mettre en oeuvre.
+The Docker images are pre-built - this workshop focuses on understanding the architecture and deployment workflow.
 
-## 1 - Mise en place du projet Google Cloud Platform
+**What we will cover:**
 
-Sélectionnez votre projet Google Cloud Platform personnel
+1. Key concepts: APIs and microservices
+2. Testing the backend locally
+3. Testing the frontend locally
+4. Using docker-compose for multi-container orchestration
+5. Deploying the backend to Google Cloud Run
+6. Connecting everything together
 
-## 2 - Démarrage du GitHub Codespace
+## 1 - Key Concepts
 
-Si vous avez déjà démarré un GitHub Codespace précédemment, vous pouvez le relancer via l'[interface habituelle](https://github.com/codespaces)
+Before diving into the hands-on, let's understand two important concepts.
 
-Sinon, démarrez un github codespace depuis le repository [https://github.com/fchouteau/isae-cloud-computing-codespace](https://github.com/fchouteau/isae-cloud-computing-codespace)
+### What is an API?
 
-Il est nécéssaire d'utiliser un codespace à partir de ce repository car il contient tout ce dont vous avez besoin pour ce TP.
+An **API** (Application Programming Interface) defines how software components communicate. For web applications, this means:
+
+- **Client sends a request**: HTTP method + URL + optional data
+- **Server processes and responds**: Status code + data (usually JSON)
+
+In this workshop, the backend exposes an API with endpoints like:
+
+| Endpoint | Method | Input | Output |
+|----------|--------|-------|--------|
+| `/health` | GET | None | `{"status": "ok"}` |
+| `/predict` | POST | Base64 image | `{"detections": [...], "time": 0.5}` |
+
+The frontend doesn't need to know *how* the model works - it just sends images and receives predictions through the API contract.
+
+### Why Microservices?
+
+Our application has two components:
+
+| Component | Role | Technology |
+|-----------|------|------------|
+| Backend | Receives images, runs YOLO model, returns predictions | FastAPI |
+| Frontend | User interface for uploading images and displaying results | Streamlit |
+
+**Why separate them instead of one monolithic application?**
+
+- **Independent scaling** - The backend needs more CPU/memory for ML inference; the frontend is lightweight
+- **Independent updates** - Change the UI without touching the model, or vice versa
+- **Technology flexibility** - Use the best framework for each job
+- **Team autonomy** - Different developers can work on each component
+
+!!! note "When to use microservices"
+    Microservices add complexity (networking, deployment coordination). For small projects, a monolith is often simpler. We use microservices here to demonstrate the pattern you'll encounter in production systems.
+
+## 2 - Setup
+
+### Select your GCP Project
+
+Select your personal Google Cloud Platform project (the same one from previous sessions).
+
+### Start your GitHub Codespace
+
+If you already have a GitHub Codespace from previous sessions, relaunch it from the [Codespaces interface](https://github.com/codespaces).
+
+Otherwise, start a new one from [https://github.com/fchouteau/isae-cloud-computing-codespace](https://github.com/fchouteau/isae-cloud-computing-codespace)
 
 ![codespace](slides/static/img/codespacefchouteau.png)
 
-Normalement, une fois le codespace lancé, vous devriez obtenir une interface vscode avec deux dossiers dont un nommé `tp-deployment`. Rendez-vous dans ce dossier,
+### Verify gcloud configuration
 
-Il y a plusieurs ressources : le `frontend` qui contient de quoi construire l'IHM, le `backend` qui contient de quoi construire le serveur, et des ressources de tests.
+```bash
+gcloud config get-value project
+```
 
-## 3 - Construction et tests du backend
+If not configured, run `gcloud init` as you did in the [previous session](1_2d_handson_gcp.md).
 
-Le `README.md` du dossier `backend` contient des détails concernant la construction du serveur et de son API (qui était auparavant laissé en exercice). Nous utilisons [FastAPI](https://fastapi.tiangolo.com/) qui un framework de construction d'applications Web.
+### Navigate to the workshop folder
 
-Le code principal se trouve dans `app.py`. On déclare des "routes" (des méthodes d'interactions avec le serveur) puis on leur assigne des fonctions.
+```bash
+cd tp-deployment
+ls
+```
 
-Par exemple, vous pouvez regarder la route `/predict` qui est associée à la fonction du même nom.
+You should see:
+
+```
+tp-deployment/
+├── backend/           # FastAPI server with YOLO model
+├── frontend/          # Streamlit user interface
+├── docker-compose.yml # Multi-container configuration
+└── test-images/       # Sample images for testing
+```
+
+## 3 - Understanding and Testing the Backend
+
+The `backend/` folder contains a FastAPI application that serves the YOLO object detection model.
+
+### Explore the code
+
+Open `backend/app.py` and look for:
+
+- The FastAPI app declaration
+- The `/predict` route - receives an image, runs inference, returns detections
+- The `/health` route - simple endpoint to check if the server is alive
 
 ```python
 @app.post(
@@ -55,68 +126,99 @@ Par exemple, vous pouvez regarder la route `/predict` qui est associée à la fo
 )
 ```
 
-Cette fonction effectue l'inférence sur l'image qui est donnée via la requête REST vers la route /predict.
+!!! info "What is FastAPI?"
+    FastAPI is a modern Python web framework for building APIs. It automatically generates interactive documentation from your code and validates request/response data.
 
-Afin de mieux illustrer les possibilités d'intéraction avec ce serveur, nous allons le lancer localement, en utilisant l'image docker déjà construite 
+### Run the backend locally
 
-!!! note
-    Remarque: vous pouvez reproduire le docker en lançant 
+Launch the backend container:
 
-    `docker build -f Dockerfile -t eu.gcr.io/third-ridge-138414/yolo-v5:1.2`
+```bash
+docker run --rm -p 8000:8000 eu.gcr.io/third-ridge-138414/yolo-v5:1.2
+```
 
-Lancez la commande suivante `docker run --rm -p 8000:8000 eu.gcr.io/third-ridge-138414/yolo-v5:1.2`
+This starts a container exposing port 8000.
 
-Cela lance un container depuis l'image docker du backend en exposant le port 8000.
+### Test the API
 
-Connectez-vous au port 8000 du codespace. Vous devriez avoir une page vierge qui contient `"YOLO-V5 WebApp created with FastAPI"`
+**Option 1: Browser**
 
-Nous allons maintenant regarder la documentation de l'application. Celle-ci est automatiquement générée à partir du code de `app.py` via le framework FastAPI et est disponible sur la route `/docs`. Pour plus d'informations, voir [ici](https://fastapi.tiangolo.com/features/#automatic-docs)
+Open port 8000 in your Codespace. You should see:
 
-Connectez-vous donc à la route `/docs` en rajoutant ce terme à l'URL du codespace. 
+```
+"YOLO-V5 WebApp created with FastAPI"
+```
+
+Navigate to `/docs` to see the interactive API documentation:
 
 ![fastapidoc](slides/static/img/apidoc.png)
 
-Cette page web décrit les différentes routes accessibles et leurs méthodes d'intéraction, ainsi que les formats d'entrée et de sortie. C'est la documentation de l'API et lorsque vous interagissez avec le serveur, c'est la seule chose dont vous avez besoin. La documentation de l'API est [normalisée](https://github.com/swagger-api/swagger-ui).
+**Option 2: Test script**
 
-Nous allons maintenant interagir avec ce serveur.
+In a new terminal, run the test script:
 
-Dans le dossier `backend` se trouve un fichier python `test_webapp.py`. Il va automatiquement envoyer les bonnes requêtes au serveur. Executez-le (`python test_webapp.py`), vous devriez voir s'afficher des tests correspondants au code, ainsi que les prédictions des chats sur l'image `cats.png` 
+```bash
+cd backend
+python test_webapp.py
+```
 
-Laissez le terminal avec le container démarré pour l'instant,
+This sends test requests to the API and displays the detection results for `cats.png`.
 
-## 4 - Construction et tests du frontend
+!!! success "Checkpoint"
+    You should see test results and cat detections printed. Keep this container running for the next section.
 
-Comme vous aurez pu le constater, ce n'est pas très intuitif d'interagir avec le backend via des scripts, on aimerait pouvoir visualiser plus facilement les prédictions, faire des seuils sur la confiance des objets, etc...
+## 4 - Understanding and Testing the Frontend
 
-Pour cela nous allons créer une application `streamlit` (remarque: pour une introduction à streamlit rendez-vous dans la [section 6 du BE](/1_5_be.md##21-lets-discover-streamlit))
+Interacting with the backend via scripts isn't user-friendly. The `frontend/` folder contains a Streamlit application that provides a visual interface.
 
-Dans votre codespace, démarrez un nouveau terminal puis allez dans le dossier `frontend`. Là encore, le fichier `app.py` contient le code de l'applicaiton streamlit. Celle-ci va récupérer une image que vous allez uploader (image de votre choix) puis l'envoyer au serveur dont vous spécifiez l'IP dans la case en haut à gauche.
+### Explore the code
 
-Nous allons lancer cette application,
+Open `frontend/app.py` and look for:
 
-`docker run --rm -p 8501:8501 --network="host" eu.gcr.io/third-ridge-138414/yolo-v5-streamlit:1.5`
+- The backend URL configuration (user can change it in the UI)
+- The "IS ALIVE" button - calls `/health` to check if the backend is reachable
+- The image upload widget and "PREDICT" button - sends the image to `/predict`
 
-Rendez-vous sur le port 8501 de votre github codespace, 
+### Run the frontend locally
+
+Open a **new terminal** (keep the backend running in the first one):
+
+```bash
+docker run --rm -p 8501:8501 --network="host" eu.gcr.io/third-ridge-138414/yolo-v5-streamlit:1.5
+```
+
+!!! info "Why `--network=\"host\"`?"
+    This lets the frontend container access `localhost:8000` where the backend is running. Without it, containers are on isolated networks and cannot communicate.
+
+### Test the full flow
+
+1. Open port 8501 in your Codespace
+2. The backend URL should default to `http://localhost:8000`
+3. Click **"IS ALIVE"** - should confirm the backend is reachable
+4. Upload an image (try one with people, cars, or animals)
+5. Click **"PREDICT"** - you should see detection boxes drawn on the image
 
 ![streamlit](slides/static/img/companionapp.png)
 
-La première étape est de renseigner l'adresse (URL) du backend. Pour tester que vous arrivez bien à joindre le serveur, cliquez sur le bouton "IS ALIVE". Ce bouton (voir code dans `app.py`) envoie une requête à la route /health pour vérifier que le serveur est vivant.
+!!! success "Checkpoint"
+    You can now send images through the frontend and see YOLO detections. Stop both containers (Ctrl+C in each terminal) before continuing.
 
-Par défaut, l'URL du serveur est `http://localhost:8000` ce qui semble correct car nous avons ouvert un docker sur le port 8000.
+## 5 - Multi-Container Orchestration with docker-compose
 
-Vous pouvez maintenant tester le serveur, et s'il marche, uploader une image de votre choix avec le bouton upload puis lancer une prédiction. Cela va uploader l'image dans le frontend, puis envoyer une requête POST à `http://url-du-serveur/predict` puis récupérer les résultats (le `json`) et l'interpréter correctement.
+Running two containers manually works, but it's tedious:
 
-Vous noterez que nous avons démarré le frontend avec l'argument ` --network="host"`. Cela permet au container d'avoir accès au `localhost` (d'être sur le même réseau que l'hôte). Sans cet argument, les containers sont sur des réseaux séparés et ne se voient pas.
+- Two terminals to manage
+- Remember port mappings for each service
+- Handle networking between containers
+- Start and stop each individually
 
-Vous pouvez maintenant stopper les deux containers (backend et frontend)
+Imagine an application with 5 containers...
 
-## 5 - docker-compose
+### The solution: docker-compose
 
-Pour simplifier cette étape de déploiement multi-containers qui peut être fastidieuse (imaginez une application à 4, 5 containers !), une solution nommée `docker-compose` existe. Voir une [introduction à docker-compose](https://blog.stephane-robert.info/docs/conteneurs/orchestrateurs/docker-compose/)
+Docker Compose lets you define all services in a single YAML file and manage them with one command.
 
-Cette solution permet de lancer une série de containers en les assignant à un même réseau, de façon déclarative, c'est à dire que l'on renseigne dans un fichier de configuration la mise en place des containers.
-
-Notre `docker-compose.yml` se trouve dans le dossier `tp-deployment`
+Open `docker-compose.yml`:
 
 ```yaml
 version: '3'
@@ -133,112 +235,176 @@ services:
     hostname: streamlit
 ```
 
-Ce fichier de configuration indique qu'au lancement le frontend et le backend vont se lancer simultanément, exposer leurs ports respectifs, et pouvoir communiquer entre eux via leurs "hostnames".
+**Key benefits:**
 
-Nous allons lancer notre application par ce bias en lançant la commande `docker-compose up`
+- Both services start with one command
+- They automatically share a network (no `--network="host"` needed)
+- Services can reach each other by hostname (`yolo`, `streamlit`)
 
-Voir doc docker-compose : [https://docs.docker.com/compose/reference/](https://docs.docker.com/compose/reference/)
-
-Cela va directement démarrer nos deux services, que vous pouvez retrouver sur les ports 8000 (backend) et 8501 (frontend)
-
-Comme précédemment, vous pouvez vous connecter au frontend sur le port 8501 du codespace pour interagir directement avec le backend. La petite nuance est que ce backend est disponible sur `http://yolo:8000` plutôt que `http://localhost:8000` car le `docker-compose` a nommé les containers avec un hostname correspondant à celui spécifié (et les a mis en réseau)
-
-Une fois que vous avez interagi avec votre déploiement, nous allons maintenant déployer le backend sur un serveur sur google cloud.
-
-## 6 - Deploiement du backend sur une VM Google Compute Engine
-
-Nous allons maintenant démarrer une instance de VM Google Compute Engine et directement y déployer un container. Vous avez déjà vu cette méthode dans la [section streamlit du BE](1_4a_docker_workflow.md#26-deployment-in-a-vm)
-
-N'oubliez pas de connecter votre github codespace à votre projet gcp en utilisant `gcloud init`
-
-Récupérez votre project_id gcp via l'interface ou via la variable suivante : `PROJECT_ID=$(gcloud config get-value project 2> /dev/null)`
-
-Puis nous allons créer directement une VM en y déployant un container. Notez que l'on utilise cette fois un OS dédié à l'hébergement de containers (pas prévu pour s'y connecter en ssh) plutôt qu'ubuntu comme précédemment. 
+### Run with docker-compose
 
 ```bash
-gcloud compute instances create-with-container fch-yolo-backend \
-    --project=${PROJECT_ID} \
-    --zone=europe-west1-b \
-    --machine-type=n1-standard-2 \
-    --image=projects/cos-cloud/global/images/cos-stable-109-17800-66-27 \
-    --boot-disk-size=20GB \
-    --boot-disk-type=pd-standard \
-    --container-image=eu.gcr.io/third-ridge-138414/yolo-v5:1.2 \
-    --container-restart-policy=always
+docker-compose up
 ```
 
-Note : Si vous utilisez votre propre projet GCP, vous devez ouvrir le port 8000 à internet public pour pouvoir y accéder. Utilisez cette commande : 
+Both services start and logs are interleaved in your terminal.
+
+### Test the application
+
+1. Open port 8501 in your Codespace (frontend)
+2. Set the backend URL to `http://yolo:8000` (use the hostname, not localhost)
+3. Test "IS ALIVE" and run a prediction
+
+!!! warning "Hostname vs localhost"
+    When using docker-compose, services communicate via their hostnames defined in the YAML file. Use `http://yolo:8000`, not `http://localhost:8000`.
+
+### Stop the services
 
 ```bash
-gcloud compute --project=${PROJECT_ID} firewall-rules create open-8000 --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:8000 --source-ranges=0.0.0.0/0 
+docker-compose down
 ```
 
-## 7 - Tests
+!!! note "docker-compose vs Kubernetes"
+    docker-compose is great for local development and simple deployments. For production at scale, orchestrators like Kubernetes provide service discovery, load balancing, and self-healing across multiple machines.
 
-Nous allons maintenant tester que notre backend est bien déployé. Il faut pour cela relancer le front-end et changer l'IP pour l'IP de la machine virtuelle précédemment lancée
+## 6 - Deploying to Google Cloud Run
 
-- relancez le docker du frontend `docker run --rm -p 8501:8501 eu.gcr.io/third-ridge-138414/yolo-v5-streamlit:1.5`
-- connectez vous au port 8501 du github codespace, comme précédemment, et modifiez l'IP du backend pour qu'il corresponde à celle du serveur distant, c'est à dire l'IP publique de votre VM GCP (toujours sur le port 8000)
-- si vous envoyez une requête, elle est maintenant transmise au backend hébergée sur GCP !
+We've tested locally. Now let's deploy the backend to the cloud so anyone can access it with a real URL.
 
-## 8. Yay !
+!!! info "Why not deploy to a VM?"
+    You could deploy to a VM using `gcloud compute instances create-with-container` as you learned in the [previous session](1_4c_deployment_workflow.md). However, this approach has limitations:
 
-!!! success
-    🍾 *Et voilà, vous avez déployé votre premier modèle sur le cloud*
+    | Limitation | Problem |
+    |------------|---------|
+    | No domain name | You get a raw IP address like `35.205.x.x:8000` |
+    | No HTTPS | Traffic is unencrypted |
+    | Manual scaling | One VM handles all requests, or you manually add more |
+    | Always running | You pay even when nobody is using it |
+    | Infrastructure burden | Firewall rules, restarts, updates are your responsibility |
 
-!!! warning
-    N'oubliez pas de supprimer votre VM GCE une fois le travail terminé
+    Cloud Run solves all of these automatically.
 
-## 9. BONUS - Passer à l'échelle 
+### What is Cloud Run?
 
-Nous venons de déployer un modèle sur une unique machine.
+Cloud Run is a fully managed platform for running containers. You provide a container image, Cloud Run handles everything else:
 
-Il manque certains éléments à notre déploiement :
+| Feature | What you get |
+|---------|--------------|
+| Public URL | `https://your-service-xxxxx.run.app` |
+| HTTPS | Automatic SSL certificate, no configuration |
+| Scaling | Scales up with traffic, down to zero when idle |
+| No infrastructure | No VMs, no firewall rules, no load balancer setup |
 
-- Un nom de domaine
-- Une capacité à passer à l'échelle sur plusieurs machines, ou d'être à zéro machines s'il n'y a pas de demandes
-- Une gestion des mises à jour : Comment déployer une nouvelle version de l'application ?
-- Un routage du trafic sur la bonne instance
+### Deploy the backend
 
-Nous allons donc voir une solution de déploiement de container "managée" (aussi dite serverless / "Container as a Service") : [Google Cloud Run](https://cloud.google.com/run/docs/overview/what-is-cloud-run?hl=fr). Pour en savoir plus, lisez [l'introduction au service](https://cloud.google.com/run/docs/overview/what-is-cloud-run?hl=fr).
+Make sure gcloud is configured:
 
-L'objectif est de déployer notre container qui est un service, sans gérer l'infrastructure, ni le routage.
-![gcr](https://cloud.google.com/static/run/docs/images/cloud-run-service.svg?hl=fr)
+```bash
+export PROJECT_ID=$(gcloud config get-value project 2> /dev/null)
+echo "Deploying to project: ${PROJECT_ID}"
+```
 
-Nous allons suivre à peu près les étapes du [tutorial](https://cloud.google.com/run/docs/deploying)
+Deploy the YOLO backend:
 
-!!! hint
-    Afin de tester le passage à l'échelle, il est recommandé de se mettre en groupe et de ne faire qu'un seul déploiement et ensuite de tous essayer d'utiliser le même service (la même URL) une fois celui-ci déployé.
+```bash
+gcloud run deploy yolo-backend \
+    --image=eu.gcr.io/third-ridge-138414/yolo-v5:1.2 \
+    --platform=managed \
+    --region=europe-west1 \
+    --allow-unauthenticated \
+    --port=8000 \
+    --memory=16Gi
+```
 
-- Rendez-vous sur la page de [GCR](https://console.cloud.google.com/run?project=third-ridge-138414)
-- Sélectionnez "déployer un container"
-- Entrez l'URL du container à déployer `eu.gcr.io/third-ridge-138414/yolo-v5:1.2``
-- Entrez un nom de service
-- Sélectionnez la zone europe (west1, west4, west9)
-- Autorisez les requêtes non authentifiées
-- Ingress control : all
-- Dans les paramètres du container, sélectionnez le port 8000 et allouez lui 2 Go de RAM
-- Réglez 10s de timeout et 5 requêtes maximum par instance
-- Mettez 5 instances maximum
-- Et voilà !
+**Flags explained:**
 
-Normalement, votre service se crée. Une fois celui-ci démarré, une instance est démarrée (vous n'avez pas la main sur l'infrastructure) et la prédiction est accessible à l'URL du service.
+| Flag | Purpose |
+|------|---------|
+| `--image` | The container image to deploy |
+| `--platform=managed` | Use fully managed Cloud Run (not Kubernetes) |
+| `--region=europe-west1` | Deploy in Europe (close to users) |
+| `--allow-unauthenticated` | Public access without login |
+| `--port=8000` | The port your container listens on |
+| `--memory=16Gi` | YOLO model needs more RAM than default |
 
-Relancez le front end depuis votre codespace puis entrez l'URL du service. Lancez une prédiction.
+### Get your service URL
 
-!!! success
-    🍾 *Et voilà, vous avez déployé votre premier modèle sur le cloud*
+After deployment completes, gcloud displays the service URL:
 
-Si vous essayez de faire plusieurs requêtes simultanées au service avec des images différentes depuis plusieurs personnes, il est possible que le service "passe à l'échelle" automatiquement
+```
+Service URL: https://yolo-backend-xxxxx-ew.a.run.app
+```
 
-Pour surveiller le trafic de votre service vous pouvez utilisez :
-- Soit la page web du service google cloud run
-- Soit le [Metrics Explorer](https://console.cloud.google.com/monitoring/metrics-explorer) en sélectionnant la métrique Cloud Run Révision - Container - Instance Count. Vous pouvez aussi ajouter cette métrique en widget du dashboard gcr...
+**Test the deployed backend:**
 
-!!! hint
-    Normalement une URL d'un service a été postée sur slack, vous pouvez l'essayer...
+1. Open the URL in your browser - you should see the FastAPI welcome message
+2. Add `/docs` to the URL - you should see the interactive API documentation
 
-!!! warning
-    N'oubliez pas de supprimer votre service google cloud run une fois le travail terminé
+!!! success "Checkpoint"
+    Your backend is now running in the cloud with a real HTTPS URL. Anyone on the internet can access it.
 
+### Connect your local frontend to the cloud backend
 
+Now run the frontend locally, pointing to your Cloud Run backend:
+
+```bash
+docker run --rm -p 8501:8501 eu.gcr.io/third-ridge-138414/yolo-v5-streamlit:1.5
+```
+
+Note: No `--network="host"` needed - we're connecting to the internet, not localhost.
+
+1. Open port 8501 in your Codespace
+2. Set the backend URL to your Cloud Run URL (e.g., `https://yolo-backend-xxxxx-ew.a.run.app`)
+3. Click "IS ALIVE" - should confirm the cloud backend is reachable
+4. Upload an image and run a prediction
+
+Your request now travels from your Codespace, through the internet, to Google's infrastructure, runs inference on the YOLO model, and returns the results.
+
+!!! tip "Scaling (preview)"
+    Cloud Run can automatically scale based on traffic - spinning up more instances when busy, scaling to zero when idle. We'll explore these settings in a future session. For now, the defaults work well.
+
+## 7 - Conclusion
+
+!!! success "Congratulations!"
+    You have deployed your first ML model to production with a real HTTPS URL!
+
+### What you learned
+
+| Concept | What you did |
+|---------|--------------|
+| APIs | Understood REST endpoints (`POST /predict`, `GET /health`) |
+| Microservices | Separated frontend and backend into independent containers |
+| docker-compose | Orchestrated multiple containers locally with one command |
+| Cloud Run | Deployed a container and got a public HTTPS URL instantly |
+
+### Architecture you built
+
+```
+┌─────────────────────┐              ┌──────────────────────────────┐
+│  Local (Codespace)  │              │       Google Cloud Run       │
+│                     │              │                              │
+│  ┌───────────────┐  │    HTTPS     │  ┌────────────────────────┐  │
+│  │   Frontend    │──┼─────────────>│  │   Backend (YOLO API)   │  │
+│  │  (Streamlit)  │  │              │  │                        │  │
+│  └───────────────┘  │              │  │  yolo-backend-xxx.run  │  │
+│                     │              │  └────────────────────────┘  │
+└─────────────────────┘              └──────────────────────────────┘
+```
+
+### Cleanup
+
+Delete your Cloud Run service to avoid any charges:
+
+```bash
+gcloud run services delete yolo-backend --region=europe-west1 --quiet
+```
+
+!!! warning "Don't forget!"
+    Always clean up cloud resources when you're done. Cloud Run has a generous free tier, but it's good practice to delete unused services.
+
+### What's next
+
+- **Scaling:** Configure min/max instances and concurrency limits
+- **CI/CD:** Automatically deploy when you push to git
+- **Custom domains:** Use your own domain instead of `.run.app`
+- **Full deployment:** Deploy the frontend to Cloud Run too
