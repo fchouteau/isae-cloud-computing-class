@@ -1073,6 +1073,34 @@
   
   
     <li class="md-nav__item">
+      <a href="1_4_be.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Lecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="1_4a_gcp_workflow.html" class="md-nav__link">
         
   
@@ -1438,6 +1466,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#rest-api-basics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REST API Basics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#explore-the-code" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1760,7 +1799,7 @@
   
   
     <li class="md-nav__item">
-      <a href="1_7_appendixes.html" class="md-nav__link">
+      <a href="1_7_appendixes.md" class="md-nav__link">
         
   
   
@@ -2318,6 +2357,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#rest-api-basics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        REST API Basics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#explore-the-code" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2609,6 +2659,11 @@
 
 
 <h1 id="deploy-your-ml-model-into-production">Deploy your ML model into production<a class="headerlink" href="#deploy-your-ml-model-into-production" title="Permanent link">🔗</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Ensure that you are running on the latest codespace which was updated today.
+Do not use previous codespace of the last day of classes.</p>
+</div>
 <h2 id="objectives">Objectives<a class="headerlink" href="#objectives" title="Permanent link">🔗</a></h2>
 <p>By the end of this workshop, you will be able to:</p>
 <ol>
@@ -2656,7 +2711,7 @@
 <td><code>/health</code></td>
 <td>GET</td>
 <td>None</td>
-<td><code>{"status": "ok"}</code></td>
+<td><code>"HEALTH OK"</code></td>
 </tr>
 <tr>
 <td><code>/predict</code></td>
@@ -2707,24 +2762,82 @@
 <h3 id="start-your-github-codespace">Start your GitHub Codespace<a class="headerlink" href="#start-your-github-codespace" title="Permanent link">🔗</a></h3>
 <p>If you already have a GitHub Codespace from previous sessions, relaunch it from the <a href="https://github.com/codespaces">Codespaces interface</a>.</p>
 <p>Otherwise, start a new one from <a href="https://github.com/fchouteau/isae-cloud-computing-codespace">https://github.com/fchouteau/isae-cloud-computing-codespace</a></p>
-<p><img alt="codespace" src="slides/static/img/codespacefchouteau.png" /></p>
+<p><img alt="codespace" src="slides/static/img/codespace-creation-page.png" /></p>
 <h3 id="verify-gcloud-configuration">Verify gcloud configuration<a class="headerlink" href="#verify-gcloud-configuration" title="Permanent link">🔗</a></h3>
 <div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>config<span class="w"> </span>get-value<span class="w"> </span>project
 </code></pre></div>
 <p>If not configured, run <code>gcloud init</code> as you did in the <a href="1_2d_handson_gcp.html">previous session</a>.</p>
 <h3 id="navigate-to-the-workshop-folder">Navigate to the workshop folder<a class="headerlink" href="#navigate-to-the-workshop-folder" title="Permanent link">🔗</a></h3>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>tp-deployment
+<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>be-ml-deployment
 ls
 </code></pre></div>
 <p>You should see:</p>
-<div class="highlight"><pre><span></span><code>tp-deployment/
+<div class="highlight"><pre><span></span><code>be-ml-deployment/
 ├── backend/           # FastAPI server with YOLO model
 ├── frontend/          # Streamlit user interface
 ├── docker-compose.yml # Multi-container configuration
-└── test-images/       # Sample images for testing
+└── test_images/       # Sample images for testing
 </code></pre></div>
 <h2 id="3-understanding-and-testing-the-backend">3 - Understanding and Testing the Backend<a class="headerlink" href="#3-understanding-and-testing-the-backend" title="Permanent link">🔗</a></h2>
 <p>The <code>backend/</code> folder contains a FastAPI application that serves the YOLO object detection model.</p>
+<h3 id="rest-api-basics">REST API Basics<a class="headerlink" href="#rest-api-basics" title="Permanent link">🔗</a></h3>
+<p>Before exploring the code, let's understand <strong>routes</strong> and <strong>HTTP methods</strong> - the building blocks of REST APIs.</p>
+<p>A <strong>route</strong> (or endpoint) is a URL path that your server responds to. Each route handles a specific action:</p>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/health</code></td>
+<td>Check if the server is alive</td>
+</tr>
+<tr>
+<td><code>/predict</code></td>
+<td>Send an image and get detections</td>
+</tr>
+<tr>
+<td><code>/models</code></td>
+<td>List available YOLO models</td>
+</tr>
+</tbody>
+</table>
+<p>Each route responds to specific <strong>HTTP methods</strong> (also called "verbs"):</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>When to use</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET</code></td>
+<td>Retrieve data (read-only)</td>
+<td>Get list of models, check health</td>
+</tr>
+<tr>
+<td><code>POST</code></td>
+<td>Send data to be processed</td>
+<td>Upload image for prediction</td>
+</tr>
+<tr>
+<td><code>PUT</code></td>
+<td>Update existing data</td>
+<td>Update model settings</td>
+</tr>
+<tr>
+<td><code>DELETE</code></td>
+<td>Remove data</td>
+<td>Delete a saved result</td>
+</tr>
+</tbody>
+</table>
+<p>For this workshop, we only use <code>GET</code> (to check health and list models) and <code>POST</code> (to send images for prediction).</p>
 <h3 id="explore-the-code">Explore the code<a class="headerlink" href="#explore-the-code" title="Permanent link">🔗</a></h3>
 <p>Open <code>backend/app.py</code> and look for:</p>
 <ul>
@@ -2732,29 +2845,50 @@ ls
 <li>The <code>/predict</code> route - receives an image, runs inference, returns detections</li>
 <li>The <code>/health</code> route - simple endpoint to check if the server is alive</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-    <span class="s2">&quot;/predict&quot;</span><span class="p">,</span>
-    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Send a base64 encoded image + the model name, get detections&quot;</span><span class="p">,</span>
-    <span class="n">response_description</span><span class="o">=</span><span class="s2">&quot;Detections + Processing time&quot;</span><span class="p">,</span>
-    <span class="n">response_model</span><span class="o">=</span><span class="n">Result</span><span class="p">,</span>
-<span class="p">)</span>
+<p><strong>How FastAPI declares routes:</strong></p>
+<p>FastAPI uses Python <strong>decorators</strong> to turn functions into API endpoints:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health&quot;</span><span class="p">)</span>       <span class="c1"># GET request to /health</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">health</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;HEALTH OK&quot;</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/models&quot;</span><span class="p">)</span>       <span class="c1"># GET request to /models</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_models</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;yolo11n&quot;</span><span class="p">,</span> <span class="s2">&quot;yolo11s&quot;</span><span class="p">,</span> <span class="s2">&quot;yolo11m&quot;</span><span class="p">]</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/predict&quot;</span><span class="p">)</span>     <span class="c1"># POST request to /predict</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">PredictRequest</span><span class="p">):</span>
+    <span class="c1"># process image and return detections</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;detections&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">],</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}</span>
 </code></pre></div>
+<p>The decorator <code>@app.get("/health")</code> tells FastAPI: "When someone sends a GET request to <code>/health</code>, call this function and return its result as JSON."</p>
 <div class="admonition info">
 <p class="admonition-title">What is FastAPI?</p>
-<p>FastAPI is a modern Python web framework for building APIs. It automatically generates interactive documentation from your code and validates request/response data.</p>
+<p>FastAPI is a modern Python web framework for building APIs. It automatically generates interactive documentation from your code and validates request/response data using Python type hints.</p>
 </div>
 <h3 id="run-the-backend-locally">Run the backend locally<a class="headerlink" href="#run-the-backend-locally" title="Permanent link">🔗</a></h3>
 <p>Launch the backend container:</p>
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-p<span class="w"> </span><span class="m">8000</span>:8000<span class="w"> </span>eu.gcr.io/third-ridge-138414/yolo-v5:1.2
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-p<span class="w"> </span><span class="m">8000</span>:8000<span class="w"> </span>europe-docker.pkg.dev/isae-sdd-481407/isae-sdd-de-2526-docker/yolo-v11-backend:1.0
 </code></pre></div>
 <p>This starts a container exposing port 8000.</p>
 <h3 id="test-the-api">Test the API<a class="headerlink" href="#test-the-api" title="Permanent link">🔗</a></h3>
 <p><strong>Option 1: Browser</strong></p>
 <p>Open port 8000 in your Codespace. You should see:</p>
-<div class="highlight"><pre><span></span><code>&quot;YOLO-V5 WebApp created with FastAPI&quot;
+<div class="highlight"><pre><span></span><code>&quot;YOLO v11 WebApp created with FastAPI&quot;
 </code></pre></div>
 <p>Navigate to <code>/docs</code> to see the interactive API documentation:</p>
-<p><img alt="fastapidoc" src="slides/static/img/apidoc.png" /></p>
+<p><img alt="fastapidoc" src="slides/static/img/fastapi-docs-screenshot.png" /></p>
+<div class="admonition info">
+<p class="admonition-title">What is this <code>/docs</code> page?</p>
+<p>This is <strong>Swagger UI</strong>, an industry-standard tool for exploring REST APIs. FastAPI automatically generates it from your Python code - no manual documentation needed!</p>
+<p>The <code>/docs</code> page shows:</p>
+<ul>
+<li>All available routes and their HTTP methods</li>
+<li>Expected request format (what data to send)</li>
+<li>Response format (what you'll get back)</li>
+<li>A "Try it out" button to test endpoints directly in your browser</li>
+</ul>
+<p>This follows the <strong>OpenAPI specification</strong> (formerly Swagger), a widely-adopted standard for describing REST APIs. Most production APIs provide similar documentation.</p>
+</div>
 <p><strong>Option 2: Test script</strong></p>
 <p>In a new terminal, run the test script:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>backend
@@ -2776,7 +2910,7 @@ python<span class="w"> </span>test_webapp.py
 </ul>
 <h3 id="run-the-frontend-locally">Run the frontend locally<a class="headerlink" href="#run-the-frontend-locally" title="Permanent link">🔗</a></h3>
 <p>Open a <strong>new terminal</strong> (keep the backend running in the first one):</p>
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-p<span class="w"> </span><span class="m">8501</span>:8501<span class="w"> </span>--network<span class="o">=</span><span class="s2">&quot;host&quot;</span><span class="w"> </span>eu.gcr.io/third-ridge-138414/yolo-v5-streamlit:1.5
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-p<span class="w"> </span><span class="m">8501</span>:8501<span class="w"> </span>--network<span class="o">=</span><span class="s2">&quot;host&quot;</span><span class="w"> </span>europe-docker.pkg.dev/isae-sdd-481407/isae-sdd-de-2526-docker/yolo-v11-frontend:1.0
 </code></pre></div>
 <div class="admonition info">
 <p class="admonition-title">Why <code>--network=\"host\"</code>?</p>
@@ -2790,7 +2924,7 @@ python<span class="w"> </span>test_webapp.py
 <li>Upload an image (try one with people, cars, or animals)</li>
 <li>Click <strong>"PREDICT"</strong> - you should see detection boxes drawn on the image</li>
 </ol>
-<p><img alt="streamlit" src="slides/static/img/companionapp.png" /></p>
+<p><img alt="streamlit" src="slides/static/img/streamlit-companion-app.png" /></p>
 <div class="admonition success">
 <p class="admonition-title">Checkpoint</p>
 <p>You can now send images through the frontend and see YOLO detections. Stop both containers (Ctrl+C in each terminal) before continuing.</p>
@@ -2810,12 +2944,12 @@ python<span class="w"> </span>test_webapp.py
 <div class="highlight"><pre><span></span><code><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3&#39;</span>
 <span class="nt">services</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">yolo</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;eu.gcr.io/third-ridge-138414/yolo-v5:1.2&quot;</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;europe-docker.pkg.dev/isae-sdd-481407/isae-sdd-de-2526-docker/yolo-v11-backend:1.0&quot;</span>
 <span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;8000:8000&quot;</span>
 <span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yolo</span>
 <span class="w">  </span><span class="nt">streamlit</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;eu.gcr.io/third-ridge-138414/yolo-v5-streamlit:1.5&quot;</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;europe-docker.pkg.dev/isae-sdd-481407/isae-sdd-de-2526-docker/yolo-v11-frontend:1.0&quot;</span>
 <span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;8501:8501&quot;</span>
 <span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">streamlit</span>
@@ -2915,17 +3049,22 @@ python<span class="w"> </span>test_webapp.py
 <h3 id="deploy-the-backend">Deploy the backend<a class="headerlink" href="#deploy-the-backend" title="Permanent link">🔗</a></h3>
 <p>Make sure gcloud is configured:</p>
 <div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">PROJECT_ID</span><span class="o">=</span><span class="k">$(</span>gcloud<span class="w"> </span>config<span class="w"> </span>get-value<span class="w"> </span>project<span class="w"> </span><span class="m">2</span>&gt;<span class="w"> </span>/dev/null<span class="k">)</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">STUDENT_NAME</span><span class="o">=</span><span class="s2">&quot;YOUR_NAME&quot;</span><span class="w">  </span><span class="c1"># Replace with your name (lowercase, no spaces)</span>
 <span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Deploying to project: </span><span class="si">${</span><span class="nv">PROJECT_ID</span><span class="si">}</span><span class="s2">&quot;</span>
 </code></pre></div>
 <p>Deploy the YOLO backend:</p>
-<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>run<span class="w"> </span>deploy<span class="w"> </span>yolo-backend<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--image<span class="o">=</span>eu.gcr.io/third-ridge-138414/yolo-v5:1.2<span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>run<span class="w"> </span>deploy<span class="w"> </span>yolo-backend-<span class="si">${</span><span class="nv">STUDENT_NAME</span><span class="si">}</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--image<span class="o">=</span>europe-docker.pkg.dev/isae-sdd-481407/isae-sdd-de-2526-docker/yolo-v11-backend:1.0<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--platform<span class="o">=</span>managed<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--region<span class="o">=</span>europe-west1<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--region<span class="o">=</span>europe-west9<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--allow-unauthenticated<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--port<span class="o">=</span><span class="m">8000</span><span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--memory<span class="o">=</span>16Gi
+<span class="w">    </span>--memory<span class="o">=</span>4Gi
 </code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Replace YOUR_NAME</p>
+<p>Replace <code>YOUR_NAME</code> with your name (lowercase, no spaces, e.g., <code>jdupont</code>)</p>
+</div>
 <p><strong>Flags explained:</strong></p>
 <table>
 <thead>
@@ -2937,14 +3076,14 @@ python<span class="w"> </span>test_webapp.py
 <tbody>
 <tr>
 <td><code>--image</code></td>
-<td>The container image to deploy</td>
+<td>The pre-built container image to deploy</td>
 </tr>
 <tr>
 <td><code>--platform=managed</code></td>
 <td>Use fully managed Cloud Run (not Kubernetes)</td>
 </tr>
 <tr>
-<td><code>--region=europe-west1</code></td>
+<td><code>--region=europe-west9</code></td>
 <td>Deploy in Europe (close to users)</td>
 </tr>
 <tr>
@@ -2956,11 +3095,27 @@ python<span class="w"> </span>test_webapp.py
 <td>The port your container listens on</td>
 </tr>
 <tr>
-<td><code>--memory=16Gi</code></td>
-<td>YOLO model needs more RAM than default</td>
+<td><code>--memory=4Gi</code></td>
+<td>YOLO model needs more RAM than default (max 4Gi for 1 CPU)</td>
 </tr>
 </tbody>
 </table>
+<div class="admonition warning">
+<p class="admonition-title">Making the service public</p>
+<p>The <code>--allow-unauthenticated</code> flag requires specific IAM permissions that students may not have (Editor role is not sufficient).</p>
+<p><strong>If you get a permission error</strong>, the service will deploy but remain private. Ask the instructor to make it public:</p>
+<ol>
+<li>Go to <a href="https://console.cloud.google.com/run">Cloud Run Console</a></li>
+<li>Click on your service</li>
+<li>Go to <strong>Security</strong> tab → <strong>Authentication</strong> → Select <strong>Allow unauthenticated invocations</strong></li>
+</ol>
+<p>Alternatively, the instructor can run:
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>run<span class="w"> </span>services<span class="w"> </span>add-iam-policy-binding<span class="w"> </span>yolo-backend-<span class="si">${</span><span class="nv">STUDENT_NAME</span><span class="si">}</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--region<span class="o">=</span>europe-west9<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--member<span class="o">=</span><span class="s2">&quot;allUsers&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--role<span class="o">=</span><span class="s2">&quot;roles/run.invoker&quot;</span>
+</code></pre></div></p>
+</div>
 <h3 id="get-your-service-url">Get your service URL<a class="headerlink" href="#get-your-service-url" title="Permanent link">🔗</a></h3>
 <p>After deployment completes, gcloud displays the service URL:</p>
 <div class="highlight"><pre><span></span><code>Service URL: https://yolo-backend-xxxxx-ew.a.run.app
@@ -2976,7 +3131,7 @@ python<span class="w"> </span>test_webapp.py
 </div>
 <h3 id="connect-your-local-frontend-to-the-cloud-backend">Connect your local frontend to the cloud backend<a class="headerlink" href="#connect-your-local-frontend-to-the-cloud-backend" title="Permanent link">🔗</a></h3>
 <p>Now run the frontend locally, pointing to your Cloud Run backend:</p>
-<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-p<span class="w"> </span><span class="m">8501</span>:8501<span class="w"> </span>eu.gcr.io/third-ridge-138414/yolo-v5-streamlit:1.5
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-p<span class="w"> </span><span class="m">8501</span>:8501<span class="w"> </span>europe-docker.pkg.dev/isae-sdd-481407/isae-sdd-de-2526-docker/yolo-v11-frontend:1.0
 </code></pre></div>
 <p>Note: No <code>--network="host"</code> needed - we're connecting to the internet, not localhost.</p>
 <ol>
@@ -3035,7 +3190,7 @@ python<span class="w"> </span>test_webapp.py
 </code></pre></div>
 <h3 id="cleanup">Cleanup<a class="headerlink" href="#cleanup" title="Permanent link">🔗</a></h3>
 <p>Delete your Cloud Run service to avoid any charges:</p>
-<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>run<span class="w"> </span>services<span class="w"> </span>delete<span class="w"> </span>yolo-backend<span class="w"> </span>--region<span class="o">=</span>europe-west1<span class="w"> </span>--quiet
+<div class="highlight"><pre><span></span><code>gcloud<span class="w"> </span>run<span class="w"> </span>services<span class="w"> </span>delete<span class="w"> </span>yolo-backend-<span class="si">${</span><span class="nv">STUDENT_NAME</span><span class="si">}</span><span class="w"> </span>--region<span class="o">=</span>europe-west9<span class="w"> </span>--quiet
 </code></pre></div>
 <div class="admonition warning">
 <p class="admonition-title">Don't forget!</p>
